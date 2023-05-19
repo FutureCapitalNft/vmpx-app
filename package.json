@@ -9,14 +9,36 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@ethersproject/contracts": "^5.7.0",
+    "@ethersproject/providers": "^5.7.0",
+    "@ethersproject/wallet": "^5.7.0",
+    "@mui/icons-material": "^5.10.3",
+    "@mui/material": "^5.10.14",
+    "@walletconnect/qrcode-modal": "^1.8.0",
+    "@walletconnect/web3-provider": "^1.8.0",
+    "debug": "^4.3.4",
+    "next": "13.4.3",
+    "react": "18.2.0",
+    "react-countdown": "^2.3.2",
+    "react-dom": "18.2.0",
+    "web3modal": "^1.9.9"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
     "@types/node": "20.2.1",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
-    "next": "13.4.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
     "typescript": "5.0.4"
-  }
+  },
+  "browserslist": [
+    ">0.1%",
+    "not ie 11",
+    "not dead",
+    "not op_mini all",
+    "not EDGE <= 18"
+  ]
 }
