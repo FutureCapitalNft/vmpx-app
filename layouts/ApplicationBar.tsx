@@ -19,6 +19,7 @@ import {NotificationsContext} from "@/contexts/Notifications";
 import {Web3Context} from "@/contexts/Web3";
 import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 import {ThemeContext} from "@/contexts/Theme";
+import Link from "next/link";
 
 const {publicRuntimeConfig: config} = getConfig();
 
@@ -64,7 +65,9 @@ const ApplicationBar = () => {
               elevation={0}>
         <Alerts/>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Avatar src={'/favicon.ico'} />
+          <Link href="/" passHref >
+            <Avatar src={'/favicon.ico'} />
+          </Link>
           <Stack direction="row" sx={{ alignItems: 'center' }}>
           <Tooltip title="Toggle light/dark mode">
             <IconButton sx={{ml: 1}} onClick={toggleTheme} color="inherit">

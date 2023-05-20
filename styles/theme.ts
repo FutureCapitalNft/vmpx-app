@@ -3,6 +3,9 @@ import {ThemeOptions} from "@mui/material";
 export const defaultTheme: ThemeOptions = {
   palette: {
     mode: 'dark',
+    common: {
+      // white: '#373737'
+    },
     success: {
       main: '#C44A00'
     },
@@ -38,6 +41,12 @@ export const defaultTheme: ThemeOptions = {
 export const overrides = (mode: string) =>
   mode === 'light'
     ? ({
+      palette: {
+        background: {
+          default: '#373737',
+          paper: '#373737',
+        }
+      },
       components: {
         MuiPaper: {
           styleOverrides: {

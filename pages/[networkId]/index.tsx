@@ -80,7 +80,7 @@ const NetworkPage = ({}: any) => {
           <Grid container sx={{ maxWidth: 400, justifyContent: 'center', margin: 'auto' }}>
             <Grid item xs={6} sx={{ textAlign: 'left' }}>Cap</Grid>
             <Grid item xs={6} sx={{ textAlign: 'right' }}>{((globalState?.cap || 0n) / ethersInWei).toLocaleString()}</Grid>
-            <Grid item xs={6} sx={{ textAlign: 'left' }}>Minted</Grid>
+            <Grid item xs={6} sx={{ textAlign: 'left' }}>Dripped</Grid>
             <Grid item xs={6} sx={{ textAlign: 'right' }}>{globalState?.totalSupply?.toLocaleString()}</Grid>
             <Grid item xs={12} sx={{ py: 4, mt: 4 }}>
               <LoadingButton

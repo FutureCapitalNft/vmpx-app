@@ -7,27 +7,27 @@ import {
   Box,
   Container,
   Typography,
-  Grid
+  Grid, Button
 } from "@mui/material";
-import {NotificationsContext} from "@/contexts/Notifications";
-import {Web3Context} from "@/contexts/Web3";
-import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
+// import {NotificationsContext} from "@/contexts/Notifications";
+// import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
+import Link from "next/link";
+import {WalletContext} from "@/contexts/Wallet";
+import {useRouter} from "next/router";
 const {publicRuntimeConfig: config} = getConfig();
-const supportedNetworks = networks({config});
+// const supportedNetworks = networks({config});
 
 const HomePage = ({}: any) => {
-  const { } = useContext(NotificationsContext);
-  const {networkId} = useContext(CurrentNetworkContext);
-  const {ready, initState, syncState, syncUser} = useContext(Web3Context);
+  const { requestNetwork } = useContext(WalletContext);
+  const router = useRouter();
 
-  useEffect(() => {
-    console.log('index', ready, networkId);
-    if (ready && networkId) {
-      initState()
-        .then(_ => syncState())
-        .then(_ => syncUser())
-    }
-  }, [ready, networkId])
+  const onNetworkClick = (networkId: string) => () => {
+    requestNetwork(networkId)
+      .then(_ => router.replace(`/${networkId}`))
+      .catch(_ => {
+        // Do nothing; should already be handled
+      });
+  }
 
   return (
     <div className={styles.container}>
@@ -45,11 +45,15 @@ const HomePage = ({}: any) => {
             fontWeight: 'bold',
             marginBottom: '1rem',
           }} variant="h5">
-            Explore XEN Universe
+            Welcome to VMPX World
           </Typography>
-          <Box>
-            VMPX
-          </Box>
+            <Button
+              color="success"
+              variant="outlined"
+              onClick={onNetworkClick('x1')}
+              sx={{ borderRadius: 25}} >
+              Drip VMPX on X1
+            </Button>
         </Container>
       </Box>
     </div>
