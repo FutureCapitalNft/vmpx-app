@@ -27,7 +27,7 @@ const ConnectWalletButton = () => {
   const isAuthorized = authorized && accounts && accounts[0];
 
   useEffect(() => {
-    console.log('wallet', isAuthorized, isConnected, helper)
+    // console.log('wallet', isAuthorized, isConnected, helper)
     if (isAuthorized && isConnected && helper && typeof helper.getUserOptions === 'function') {
       const cachedProvider = helper?.cachedProvider || localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER');
       setWalletLogo((helper?.getUserOptions() || [])

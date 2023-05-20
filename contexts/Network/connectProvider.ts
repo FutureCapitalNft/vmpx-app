@@ -1,5 +1,5 @@
 import {Web3Provider} from "@ethersproject/providers";
-import Core, {Modal} from "web3modal";
+import Core from "web3modal";
 import * as ga from "@/shared/ga";
 import WalletConnect from "@walletconnect/client";
 import getConfig from "next/config";
@@ -17,12 +17,12 @@ let connector: WalletConnect; // WalletConnect connector instance
 export const connectProvider = async (networkId: string, helper: Core) => {
   let provider: any, instance: any, injected: any;
   const known = Object.values(checkForKnownProviders());
-  console.log(known);
+  // console.log(networkId, known);
   if (typeof window !== 'undefined' && known.length > 0) {
     if (known.length === 1) {
-        provider = new Web3Provider(known[0] as any, networkId || 'any');
-        instance = known[0];
-        injected = known[0];
+      provider = new Web3Provider(known[0] as any, 'any');
+      instance = known[0];
+      injected = known[0];
     } else {
       let cachedProviderName = localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER");
       cachedProviderName = cachedProviderName ? cachedProviderName.slice(1, -1) : null;
@@ -33,22 +33,23 @@ export const connectProvider = async (networkId: string, helper: Core) => {
         } else {
           const key = cachedProviderName.replace('custom-', '');
           const custom = window[`${key}` as any];
-          console.log(key, custom)
+          // console.log(key, custom)
           injected = ('otherEthereum' in custom) ? custom.ethereum : custom;
           instance = ('otherEthereum' in custom) ? custom.ethereum : custom;
         }
         if (instance) {
-          provider = new Web3Provider(instance, networkId || 'any');
+          provider = new Web3Provider(instance, 'any');
         }
       } else {
         instance = window.ethereum;
         injected = instance;
-        provider = new Web3Provider(instance, networkId || 'any');
+        provider = new Web3Provider(instance,  'any');
       }
     }
     if (!provider) return null;
 
     provider.pollingInterval = publicRuntimeConfig.rpcPollingInterval;
+
     return provider.provider.request({ method: 'eth_chainId' })
       .then((n: string) => {
         const id = Number(n)
@@ -106,7 +107,7 @@ export const connectProvider = async (networkId: string, helper: Core) => {
         return {provider, instance: wcProvider, connector}
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return {provider, instance: wcProvider, connector}
     }
 

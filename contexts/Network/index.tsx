@@ -139,8 +139,6 @@ export const NetworkProvider = ({ children }: any) => {
             isLoading: false,
             defaultProvider: null,
             contractAddress: network.contractAddress,
-            bulkMinterAddress: null,
-            torrentAddress: network.minterAddress
           }
         } finally {
           dispatchInfo({ type: 'networkInfo', id: Number(network.chainId), config });
@@ -152,7 +150,7 @@ export const NetworkProvider = ({ children }: any) => {
   }, [networkId])
 
   useEffect(() => {
-    connectProvider(networkId || 'mainnet', helper)
+    connectProvider(networkId || '', helper)
       .then(p => {
         if (p && typeof p === 'object') {
           log('current provider connected', networkId, p);

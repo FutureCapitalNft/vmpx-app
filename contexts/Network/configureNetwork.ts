@@ -30,8 +30,6 @@ export const configureNetwork = async (networkConfig: TNetworkConfig) => {
     errorText: null,
     isLoading: false,
     defaultProvider: null,
-    bulkMinterAddress: null,
-    torrentAddress: networkConfig.minterAddress,
   }
   const selectedChainId = Number(window.ethereum && window.ethereum.chainId || publicRuntimeConfig.chainId || 1);
 

@@ -1,6 +1,5 @@
 import debug from 'debug';
 import {TWeb3State} from "../types";
-// import {dedupeArray} from "../../shared/dedupeArray";
 import init from "./initialState";
 
 const log = debug('context:web3:state');
@@ -14,7 +13,7 @@ export type TWeb3StateAction = {
 }
 
 export const reducer = (state: TWeb3State, action: TWeb3StateAction): TWeb3State => {
-  if (['setGlobal', 'setGlobalRank'].includes(action.type)
+  if (['setGlobal'].includes(action.type)
     || ['push','inc','setTotal'].reduce((r,e)=>r||action.type.startsWith(e),false)) {
     log(action.type, action.meta, action.id, action.payload);
   }
@@ -61,55 +60,13 @@ export const reducer = (state: TWeb3State, action: TWeb3StateAction): TWeb3State
           globalState: {
             ...state.globalState,
             [action.id]: {
-              ...state.globalState[action.id],
+              ...state.globalState[action.id as any],
               ...action.payload
             }
           },
         };
       }
       error('no id for', action.type)
-      return state;
-    case "setGlobalRank":
-      error('deprecated', action.type)
-      return state;
-    case "setEventsSubscribed":
-      error('deprecated', action.type)
-      return state;
-    case "pushClaimEvent":
-      error('deprecated', action.type)
-      return state;
-    case "pushMintEvent":
-      error('deprecated', action.type)
-      return state;
-    case "pushStakeEvent":
-      error('deprecated', action.type)
-      return state;
-    case "pushWithdrawEvent":
-      error('deprecated', action.type)
-      return state;
-    case "incTotalClaim":
-      error('deprecated', action.type)
-      return state;
-    case "incTotalMint":
-      error('deprecated', action.type)
-      return state;
-    case "incTotalStake":
-      error('deprecated', action.type)
-      return state;
-    case "incTotalWithdraw":
-      error('deprecated', action.type)
-      return state;
-    case "setTotalClaim":
-      error('deprecated', action.type)
-      return state;
-    case "setTotalMint":
-      error('deprecated', action.type)
-      return state;
-    case "setTotalStake":
-      error('deprecated', action.type)
-      return state;
-    case "setTotalWithdraw":
-      error('deprecated', action.type)
       return state;
     case "setUser":
       if (!action.payload) {
@@ -131,22 +88,6 @@ export const reducer = (state: TWeb3State, action: TWeb3StateAction): TWeb3State
         user: {
           ...state.user,
           balance: action.payload
-        }
-      };
-    case "setUserMint":
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          mintInfo: action.payload
-        }
-      };
-    case "setUserStake":
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          stakeInfo: action.payload
         }
       };
     default:

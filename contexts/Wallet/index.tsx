@@ -274,7 +274,7 @@ export const WalletProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (currentProvider) {
-      log('quiet auth', currentProvider, injected);
+      // console.log('quiet auth', currentProvider, injected);
       authorizeWallet(true)
         .then(_ => {})
         .catch(error);

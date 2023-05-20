@@ -1,12 +1,11 @@
 import {
-  AppBar,
+  AppBar, Avatar,
   Box,
-  IconButton,
+  IconButton, Stack,
   Toolbar,
   Tooltip,
   useTheme
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import SelectNetworkButton from "../components/selectNetworkButton";
@@ -64,8 +63,9 @@ const ApplicationBar = () => {
       <AppBar position="fixed"
               elevation={0}>
         <Alerts/>
-        <Toolbar sx={{ justifyContent: 'right' }}>
-          {/*false && <XENIconButton networkId={networkId} mode={mode} />*/}
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Avatar src={'/favicon.ico'} />
+          <Stack direction="row" sx={{ alignItems: 'center' }}>
           <Tooltip title="Toggle light/dark mode">
             <IconButton sx={{ml: 1}} onClick={toggleTheme} color="inherit">
               {mode === 'dark' ? <Brightness7Icon/> : <Brightness4Icon sx={{color: 'black'}}/>}
@@ -80,15 +80,8 @@ const ApplicationBar = () => {
           </Box>}
           <SelectNetworkButton/>
           <ConnectWalletButton/>
+          </Stack>
         </Toolbar>
-        {/*notifications.isLoading && <LinearProgress color="inherit"
-                                            variant="indeterminate"
-                                            sx={{
-                                              width: '100%',
-                                              height: '2px',
-                                              background: 'linear-gradient(to right, magenta, blue);',
-                                              '> span': { backgroundColor: theme => theme.palette.background.default },
-                                            }} />*/}
       </AppBar>
     </Box>
   )

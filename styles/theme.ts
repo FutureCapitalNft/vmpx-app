@@ -3,6 +3,16 @@ import {ThemeOptions} from "@mui/material";
 export const defaultTheme: ThemeOptions = {
   palette: {
     mode: 'dark',
+    success: {
+      main: '#C44A00'
+    },
+    warning: {
+      main: '#EA7000'
+    },
+    background: {
+      default: '#080808',
+      paper: '#080808',
+    }
   },
   breakpoints: {
     values: {
@@ -15,8 +25,8 @@ export const defaultTheme: ThemeOptions = {
   },
   typography: {
     fontFamily: [
-      'Noto Sans',
-      //'Source Sans Pro',
+      // 'Italiana',
+      'Play',
       'Arial',
       'sans-serif'
     ].join(','),

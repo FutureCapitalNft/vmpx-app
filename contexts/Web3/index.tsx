@@ -20,13 +20,12 @@ import {TNetworkInfo} from "../types";
 import {TWeb3Context} from "./types";
 
 const log = debug('context:web3');
-const logDB = debug('context:web3:iddb');
 const error = debug('context:web3:error');
 
 const { publicRuntimeConfig } = getConfig();
 const supportedNetworks = networks({ config: publicRuntimeConfig });
 
-const contractABI = publicRuntimeConfig.xenCryptoABI;
+const contractABI = publicRuntimeConfig.vmpxABI;
 
 const init = (initialState: any) => {
   return {
@@ -80,7 +79,11 @@ export const Web3Provider = ({ children }: any) => {
       setReady(true);
       log('ready!')
     } else {
-      //log('ready?', networkInfo[Number(getCurrentNetwork(networkId)?.chainId)])
+      console.log(
+        'ready?',
+        networkInfo,
+        networkInfo[Number(getCurrentNetwork(networkId || 'mainnet')?.chainId)]
+      )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet, networkId, networkReady])
@@ -120,12 +123,16 @@ export const Web3Provider = ({ children }: any) => {
     const contract = getVmpxContract(requestedNetworkId || 'mainnet', false);
     if (!contract) throw new Error('cannot make contract for ' + requestedNetworkId);
     try {
-      log('init state', requestedNetworkId);
+      console.log('init state', requestedNetworkId);
       setLoading(true);
       // const fetcher0 = (method) => () => contract[method]()
-      const genesisTs = await contract.genesisTs().then(toNumber);
+      const cap = await contract.cap().then(toBigInt);
+      const cycles = await contract.cycles().then(toNumber);
+      const batch = await contract.BATCH().then(toBigInt);
       const globalState = {
-        genesisTs,
+          cap,
+          cycles,
+          batch
       }
       if (requestedNetworkId || networkId) {
         dispatch({
@@ -135,10 +142,10 @@ export const Web3Provider = ({ children }: any) => {
           meta: 'init state'
         });
       }
-      log('init', requestedNetworkId, globalState);
+      console.log('init', requestedNetworkId, globalState);
       return globalState;
     } catch (e) {
-      error(e)
+      console.error(e)
     } finally {
       setLoading(false);
     }
@@ -150,9 +157,11 @@ export const Web3Provider = ({ children }: any) => {
     try {
       log('sync state', requestedNetworkId);
       setLoading(true);
+      const counter = await contract.counter().then(toNumber);
       const totalSupply = await contract.totalSupply()
-        .then(toBigInt).then(asEther).then(toNumber);
+        .then(toBigInt).then(asEther);
       const globalState = {
+        counter,
         totalSupply,
       }
       if (requestedNetworkId || networkId) {
@@ -214,7 +223,7 @@ export const Web3Provider = ({ children }: any) => {
 
   const mint = async () => {
     const vmpxContract = getVmpxContract(undefined, true);
-    if (!vmpxContract) throw new Error('cannot make signing torrent contract for default ' + networkId);
+    if (!vmpxContract) throw new Error('cannot make signing VMPX contract for default ' + networkId);
     let tx;
     try {
       // log('terms accepted', termsAccepted);

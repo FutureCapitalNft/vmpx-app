@@ -68,7 +68,7 @@ export const authorizeInjected = async (quiet = true, web3Modal: Core, currentPr
       })
       return {network, accounts, provider}
     } else {
-      console.log('quiet', currentProvider, web3Modal.cachedProvider)
+      // console.log('quiet', currentProvider, web3Modal.cachedProvider)
       if (!currentProvider) return {};
       provider = new Web3Provider(currentProvider.provider, 'any');
       provider.pollingInterval = publicRuntimeConfig.rpcPollingInterval;
@@ -82,7 +82,7 @@ export const authorizeInjected = async (quiet = true, web3Modal: Core, currentPr
           })
           accounts = await currentProvider.provider.request({method: 'wallet_request', params: []});
         }
-        console.log(network, accounts)
+        // console.log(network, accounts)
         ga.event({
           action: 'authorized_wallet_success',
           params: {

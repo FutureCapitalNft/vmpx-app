@@ -21,7 +21,7 @@ const DynamicLayout = ({ Component, pageProps, networkId }: any) => {
     return Component.getLayout({ Component, pageProps, networkId, query: router.query });
   } else if (networkId) {
     return (
-      <Layout projectId="xen"
+      <Layout projectId="vmpx"
               contractAddress={supportedNetworks?.[networkId]?.contractAddress} >
           <RequireAuthorized>
             <Component {...pageProps} networkId={networkId} />

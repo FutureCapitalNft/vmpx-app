@@ -9,12 +9,25 @@ import {
   Typography,
   Grid
 } from "@mui/material";
-import {NotificationsContext} from "../contexts/Notifications";
+import {NotificationsContext} from "@/contexts/Notifications";
+import {Web3Context} from "@/contexts/Web3";
+import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
 
-const HomePage = ({isLarge}: any) => {
-  const {message} = useContext(NotificationsContext);
+const HomePage = ({}: any) => {
+  const { } = useContext(NotificationsContext);
+  const {networkId} = useContext(CurrentNetworkContext);
+  const {ready, initState, syncState, syncUser} = useContext(Web3Context);
+
+  useEffect(() => {
+    console.log('index', ready, networkId);
+    if (ready && networkId) {
+      initState()
+        .then(_ => syncState())
+        .then(_ => syncUser())
+    }
+  }, [ready, networkId])
 
   return (
     <div className={styles.container}>
