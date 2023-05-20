@@ -102,15 +102,16 @@ const nextConfig = {
     sassOptions: {
         includePaths: [path.join(__dirname, 'styles')],
     },
-  redirects() {
+  async redirects() {
     return [
       {
         source: '/terms.html',
         destination: `/terms`,
         permanent: true
-      }
+      },
     ]
-  }
+  },
+
 }
 
 module.exports = nextConfig;

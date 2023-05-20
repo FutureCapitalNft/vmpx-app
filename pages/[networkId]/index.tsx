@@ -6,7 +6,7 @@ import Head from "next/head";
 import React, {useContext, useEffect, useState} from 'react';
 import {LoadingButton} from '@mui/lab';
 import {
-  Box,
+  Box, Button,
   Container, Grid, Stack,
   Typography,
 } from "@mui/material";
@@ -15,6 +15,7 @@ import {NotificationsContext} from "@/contexts/Notifications";
 import {Web3Context} from "@/contexts/Web3";
 import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 import {TVmpxGlobalState} from "@/contexts/types";
+import Link from "next/link";
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -65,7 +66,29 @@ const NetworkPage = ({}: any) => {
         <link rel="icon" href="/favicon.ico"/>
       </Head>
       <Box>
-        <Container sx={{textAlign: 'center' }}>
+        {!vmpxIsActive && <Container sx={{textAlign: 'center' }}>
+            <Typography
+                sx={{
+                  maxWidth: '900px',
+                  margin: 'auto',
+                  fontFamily: 'Italiana',
+                  fontWeight: 'bold',
+                  marginBottom: 4,
+                }}
+                variant="h3" >
+                Not here... yet
+            </Typography>
+            <Link href="/" passHref >
+              <Button
+                  size="large"
+                  color="success"
+                  variant="outlined"
+                  sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
+                  Back to Dripping Screen
+              </Button>
+            </Link>
+        </Container>}
+        {vmpxIsActive && <Container sx={{textAlign: 'center' }}>
           <Typography
             sx={{
               maxWidth: '900px',
@@ -103,7 +126,7 @@ const NetworkPage = ({}: any) => {
               </LoadingButton>
             </Grid>
           </Grid>
-        </Container>
+        </Container>}
       </Box>
     </div>
   )

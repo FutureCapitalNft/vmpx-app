@@ -14,10 +14,12 @@ import {
 import Link from "next/link";
 import {WalletContext} from "@/contexts/Wallet";
 import {useRouter} from "next/router";
+import {ThemeContext} from "@/contexts/Theme";
 const {publicRuntimeConfig: config} = getConfig();
 // const supportedNetworks = networks({config});
 
 const HomePage = ({}: any) => {
+  const { isLarge } = useContext(ThemeContext);
   const { requestNetwork } = useContext(WalletContext);
   const router = useRouter();
 
@@ -38,7 +40,7 @@ const HomePage = ({}: any) => {
         <link rel="icon" href="/favicon.ico"/>
       </Head>
       <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh'}} >
-      {Array(100).fill(null).map((_, idx) => (<Box key={idx} className="circle-container">
+      {Array(isLarge?100:30).fill(null).map((_, idx) => (<Box key={idx} className="circle-container">
         <Box className="circle"></Box>
       </Box>))}
       </Box>

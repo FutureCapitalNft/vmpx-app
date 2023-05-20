@@ -79,7 +79,7 @@ export const Web3Provider = ({ children }: any) => {
       setReady(true);
       log('ready!')
     } else {
-      console.log(
+      log(
         'ready?',
         networkInfo,
         networkInfo[Number(getCurrentNetwork(networkId || 'mainnet')?.chainId)]
@@ -123,7 +123,7 @@ export const Web3Provider = ({ children }: any) => {
     const contract = getVmpxContract(requestedNetworkId || 'mainnet', false);
     if (!contract) throw new Error('cannot make contract for ' + requestedNetworkId);
     try {
-      console.log('init state', requestedNetworkId);
+      log('init state', requestedNetworkId);
       setLoading(true);
       // const fetcher0 = (method) => () => contract[method]()
       const cap = await contract.cap().then(toBigInt);
@@ -142,7 +142,7 @@ export const Web3Provider = ({ children }: any) => {
           meta: 'init state'
         });
       }
-      console.log('init', requestedNetworkId, globalState);
+      log('init', requestedNetworkId, globalState);
       return globalState;
     } catch (e) {
       console.error(e)
