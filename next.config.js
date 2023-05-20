@@ -1,3 +1,4 @@
+const path = require('path');
 const projects = require('./config/projectConfig.cjs');
 
 const contractInfo = (projects = {}) => {
@@ -98,6 +99,9 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: false,
   output: 'standalone',
+    sassOptions: {
+        includePaths: [path.join(__dirname, 'styles')],
+    },
   redirects() {
     return [
       {

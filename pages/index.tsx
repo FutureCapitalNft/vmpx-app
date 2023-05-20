@@ -37,21 +37,30 @@ const HomePage = ({}: any) => {
               content="VMPX. Fair Launch and distribution"/>
         <link rel="icon" href="/favicon.ico"/>
       </Head>
+      <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh'}} >
+      {Array(100).fill(null).map((_, idx) => (<Box key={idx} className="circle-container">
+        <Box className="circle"></Box>
+      </Box>))}
+      </Box>
       <Box>
         <Container sx={{textAlign: 'center'}}>
           <Typography sx={{
             maxWidth: '900px',
+            fontFamily: 'Italiana',
             margin: 'auto',
             fontWeight: 'bold',
             marginBottom: '1rem',
           }} variant="h5">
-            Welcome to VMPX World
+            Thirsty...? 🧛 Welcome to VMPX World!<br/>
+            Hurry, drip yourself some, while it lasts... <br/>
+            Your OGV rating holds the keys to the future...
           </Typography>
             <Button
+              size="large"
               color="success"
               variant="outlined"
               onClick={onNetworkClick('x1')}
-              sx={{ borderRadius: 25}} >
+              sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
               Drip VMPX on X1
             </Button>
         </Container>

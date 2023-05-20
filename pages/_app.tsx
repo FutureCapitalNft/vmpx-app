@@ -14,6 +14,8 @@ import {useRouter} from "next/router";
 const { publicRuntimeConfig } = getConfig();
 debug.enable(publicRuntimeConfig.debug);
 const supportedNetworks = networks({ config: publicRuntimeConfig });
+import "../styles/circles.scss";
+
 
 const DynamicLayout = ({ Component, pageProps, networkId }: any) => {
   const router = useRouter();

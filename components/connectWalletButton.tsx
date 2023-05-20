@@ -94,7 +94,7 @@ const ConnectWalletButton = () => {
             Address: {userAccount}
           </StyledMenuItem>}
           {!isLarge && <StyledMenuItem >
-              XEN balance: {(state.user?.balance || 0).toLocaleString()}
+              VMPX balance: {(state.user?.balance || 0).toLocaleString()}
           </StyledMenuItem>}
           {!isLarge && <Divider />}
           {notifications.isProcessing && <StyledMenuItem disabled
