@@ -3,7 +3,7 @@ import styles from "../styles/Home.module.css";
 import Notifications from "./Notifications";
 import Footer from "./Footer";
 import ApplicationBar from "./ApplicationBar";
-import {FlexibleThemeProvider} from "../contexts/Theme";
+import {FlexibleThemeProvider} from "@/contexts/Theme";
 
 const Layout = ({children, tokenAddress, contractAddress, projectId}: any) => {
   // TODO replace
@@ -22,8 +22,7 @@ const Layout = ({children, tokenAddress, contractAddress, projectId}: any) => {
         </section>
       </main>
       <Footer projectId={projectId}
-              contractAddress={contractAddress}
-              tokenAddress={tokenAddress} />
+              contractAddress={contractAddress} />
     </FlexibleThemeProvider>
   )
 };
