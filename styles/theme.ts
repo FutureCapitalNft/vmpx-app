@@ -41,13 +41,6 @@ export const defaultTheme: ThemeOptions = {
 export const overrides = (mode: string) =>
   mode === 'light'
     ? ({
-      mode: 'light',
-      palette: {
-        background: {
-          default: '#373737',
-          paper: '#373737',
-        }
-      },
       components: {
         MuiPaper: {
           styleOverrides: {
