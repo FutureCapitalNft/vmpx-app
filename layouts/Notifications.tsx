@@ -1,6 +1,6 @@
 import {Alert, Snackbar} from "@mui/material";
 import {useContext} from "react";
-import {NotificationsContext} from "../contexts/Notifications";
+import {NotificationsContext} from "@/contexts/Notifications";
 
 const Notifications = () => {
   const {notifications, dispatchNotification} = useContext(NotificationsContext);

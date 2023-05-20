@@ -1,9 +1,9 @@
 import {Alert, AlertTitle, Button, IconButton, Stack} from "@mui/material";
 import React, {useContext} from "react";
-import {NotificationsContext} from "../contexts/Notifications";
+import {NotificationsContext} from "@/contexts/Notifications";
 import CloseIcon from '@mui/icons-material/Close';
 
-const AlertInstance = ({ alert, onActionClick, removeAlert }) => (
+const AlertInstance = ({ alert, onActionClick, removeAlert }: any) => (
   <Alert variant="filled"
          severity={alert.severity}
          sx={{
@@ -38,7 +38,7 @@ const AlertInstance = ({ alert, onActionClick, removeAlert }) => (
 const Alerts = () => {
   const { notifications, dispatchNotification } = useContext(NotificationsContext);
 
-  const onActionClick = (key, action) => () => {
+  const onActionClick = (key: any, action: any) => () => {
     action()
       .then(() => {
         dispatchNotification({type: 'removeAlert', payload: key});
