@@ -79,6 +79,22 @@ export const overrides = (mode: string) =>
               border: 'none'
             }
           }
+        },
+        MuiSlider: {
+          styleOverrides: {
+            track: {
+              colorPrimary: '#A41E14',
+              colorSecondary: '#650F10',
+            },
+            rail: {
+              colorPrimary: '#A41E14',
+              colorSecondary: '#650F10',
+            },
+            thumb: {
+              colorPrimary: '#A41E14',
+              colorSecondary: '#650F10',
+            }
+          }
         }
       }
     })

@@ -221,7 +221,7 @@ export const Web3Provider = ({ children }: any) => {
     }
   }
 
-  const mint = async () => {
+  const mint = async (power: number) => {
     const vmpxContract = getVmpxContract(undefined, true);
     if (!vmpxContract) throw new Error('cannot make signing VMPX contract for default ' + networkId);
     let tx;
@@ -229,7 +229,7 @@ export const Web3Provider = ({ children }: any) => {
       // log('terms accepted', termsAccepted);
       log('mint');
       if (publicRuntimeConfig.requireTermsSigning) await requireTermsAccepted();
-      tx = await vmpxContract.mint()
+      tx = await vmpxContract.mint(power)
       wallet.pollingInterval = 5_000;
       await tx.wait(publicRuntimeConfig.waitForConfirmationsNumber);
       message.info('VMPX Mint Successful')

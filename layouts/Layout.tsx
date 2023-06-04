@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import ApplicationBar from "./ApplicationBar";
 import {FlexibleThemeProvider} from "@/contexts/Theme";
 
-const Layout = ({children, tokenAddress, contractAddress, projectId}: any) => {
+const Layout = ({children, contractAddress, projectId}: any) => {
   // TODO replace
   // const { notifications, setProcessing } = useContext(NotificationsContext);
   return (

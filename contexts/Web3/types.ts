@@ -15,5 +15,5 @@ export type TWeb3Context = {
   syncState: (_?: string) => Promise<any>;
   syncUser: (_?: string) => Promise<any>;
   getUserBalance: (_?: string) => Promise<any>;
-  mint: () => Promise<any>;
+  mint: (_: number) => Promise<any>;
 }
