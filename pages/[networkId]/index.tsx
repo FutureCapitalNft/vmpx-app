@@ -23,6 +23,7 @@ const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
 
 const StyledSlider = styled(Slider)(() => ({
+  mx: 8,
   mt: 4,
   '& .MuiSlider-thumb': {
     color: '#A41E14'
@@ -35,18 +36,36 @@ const StyledSlider = styled(Slider)(() => ({
   }
 }))
 
+const StyledP = styled(Typography)(() => ({
+  maxWidth: '900px',
+  margin: 'auto',
+  fontWeight: 'bold',
+  letterSpacing: '0.1rem',
+  fontFamily: 'Italiana',
+}))
+
 const StyledH = styled(Typography)(() => ({
   maxWidth: '900px',
   margin: 'auto',
   fontFamily: 'Italiana',
-  fontWeight: 'bold',
-  marginBottom: 12,
+  // fontWeight: 'bold',
+}))
+
+const StyledSubH = styled(Typography)(({ theme }: any) => ({
+  maxWidth: '900px',
+  margin: 'auto',
+  fontFamily: 'Gentium Basic',
+  color: theme.palette?.grey?.[theme.palette?.mode === 'dark' ? 500 : 800],
+  // fontWeight: 'bold',
+  marginBottom: 24,
 }))
 
 const StyledDisclaimer = styled(Typography)(({ theme }: any) => ({
   maxWidth: '900px',
   margin: 'auto',
   marginTop: 12,
+  fontSize: 12,
+  // fontFamily: 'Italiana',
   color: theme.palette?.grey?.[theme.palette?.mode === 'dark' ? 500 : 800]
 }))
 
@@ -132,32 +151,52 @@ const NetworkPage = ({}: any) => {
         </Container>}
         {vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
           <StyledH
-            variant="h2" >
+            variant="h1" >
             VMPX
           </StyledH>
+            <StyledSubH
+            variant="subtitle2" sx={{ mb: 4 }}>
+            ERC-20
+          </StyledSubH>
           <Grid container sx={{ maxWidth: 400, justifyContent: 'center', margin: 'auto' }}>
-            <Grid item xs={6} sx={{ textAlign: 'left' }}>Cap</Grid>
-            <Grid item xs={6} sx={{ textAlign: 'right' }}>{((globalState?.cap || 0n) / ethersInWei).toLocaleString()}</Grid>
-            <Grid item xs={6} sx={{ textAlign: 'left' }}>Dripped</Grid>
-            <Grid item xs={6} sx={{ textAlign: 'right' }}>{globalState?.totalSupply?.toLocaleString()}</Grid>
-            <Grid item xs={12} sx={{ textAlign: 'left' }}>
+            <Grid item xs={6} sx={{ textAlign: 'left' }}>
+                <StyledP variant="body1">Max. Supply</StyledP>
+            </Grid>
+            <Grid item xs={6} sx={{ textAlign: 'right' }}>
+                <StyledP variant="body1">
+                  {((globalState?.cap || 0n) / ethersInWei).toLocaleString()}
+                </StyledP>
+            </Grid>
+            <Grid item xs={6} sx={{ textAlign: 'left' }}>
+                <StyledP variant="body1">Minted</StyledP>
+            </Grid>
+            <Grid item xs={6} sx={{ textAlign: 'right' }}>
+                <StyledP variant="body1">
+                  {globalState?.totalSupply?.toLocaleString()}
+                </StyledP>
+            </Grid>
+            <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
                 <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-around' }}>
-                <StyledSlider
-                    value={power}
-                    onChange={onPowerChange}
-                    step={1}
-                    min={1}
-                    max={256} />
-                <Button
-                    disableRipple
-                    disabled={power === 256}
-                    onClick={setMaxPower}
-                    sx={{
-                      ml: 2,
-                      color: mode === 'dark' ? 'white': 'black'
-                }}>
-                    MAX
-                </Button>
+                    <StyledP variant="body1"  style={{ marginRight: '16px' }}>
+                        Power
+                    </StyledP>
+                  <StyledSlider
+                      value={power}
+                      onChange={onPowerChange}
+                      valueLabelDisplay="on"
+                      step={1}
+                      min={1}
+                      max={256} />
+                  <Button
+                      disableRipple
+                      disabled={power === 256}
+                      onClick={setMaxPower}
+                      sx={{
+                        ml: 2,
+                        color: mode === 'dark' ? 'white': 'black'
+                  }}>
+                      MAX
+                  </Button>
                 </Stack>
             </Grid>
             <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
@@ -170,7 +209,7 @@ const NetworkPage = ({}: any) => {
                 loadingPosition="end"
                 endIcon={<KeyboardArrowRightIcon/>}
                 onClick={doMint} >
-                {loading ? 'Dripping' : `Drip ${(power * batch).toLocaleString()} VMPX`}
+                {loading ? 'Minting' : `Mint ${(power * batch).toLocaleString()} VMPX`}
               </StyledLoadingButton>
             </Grid>
           </Grid>
