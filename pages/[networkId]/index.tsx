@@ -41,9 +41,9 @@ const StyledSlider = styled(Slider)(() => ({
 const StyledP = styled(Typography)(() => ({
   maxWidth: '900px',
   margin: 'auto',
-  fontWeight: 'bold',
+  // fontWeight: 'bold',
   letterSpacing: '0.1rem',
-  fontFamily: 'Italiana',
+  fontFamily: 'Gentium Basic',
 }))
 
 const StyledH = styled(Typography)(() => ({
@@ -66,8 +66,8 @@ const StyledDisclaimer = styled(Typography)(({ theme }: any) => ({
   maxWidth: '900px',
   margin: 'auto',
   marginTop: 12,
-  fontSize: 12,
-  // fontFamily: 'Italiana',
+  fontSize: 13,
+  fontFamily: 'Gentium Basic',
   color: theme.palette?.grey?.[theme.palette?.mode === 'dark' ? 500 : 800]
 }))
 
@@ -76,6 +76,7 @@ const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
   height: 60,
   backgroundColor: theme.palette?.mode === 'dark' ? '#650F10' : '#da7478',
   textTransform: 'unset',
+  fontFamily: 'Gentium Basic',
   color: 'white',
   '&:hover': { backgroundColor: '#A41E14'}
 }))
