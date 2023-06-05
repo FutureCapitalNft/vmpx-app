@@ -74,6 +74,7 @@ const StyledDisclaimer = styled(Typography)(({ theme }: any) => ({
 const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
   borderRadius: 33,
   height: 60,
+  width: 250,
   backgroundColor: theme.palette?.mode === 'dark' ? '#650F10' : '#da7478',
   textTransform: 'unset',
   fontFamily: 'Gentium Basic',

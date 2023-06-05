@@ -43,7 +43,7 @@ const nextConfig = {
     maxSafeVMUs: (process.env.SUPPORTED_CHAINS || '')
         .split(',').filter(_ => !!_)
         .reduce((res, e) => {
-          if (process.env[`MAX_SAFE_VMUS>_${e.toUpperCase().replace(/-/g, '_')}`]) {
+          if (process.env[`MAX_SAFE_VMUS_${e.toUpperCase().replace(/-/g, '_')}`]) {
             res[e] = process.env[`MAX_SAFE_VMUS_${e.toUpperCase().replace(/-/g, '_')}`];
           }
           return res;
