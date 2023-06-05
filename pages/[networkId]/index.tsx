@@ -120,7 +120,7 @@ const NetworkPage = ({}: any) => {
 
   const remainingToMint = Number((globalState?.cap || 0n) / ethersInWei) - Number(globalState?.totalSupply);
   const maxPossibleVMUs = Math.min(maxSafeVMUs, Math.floor(remainingToMint / batch));
-  console.log(maxSafeVMUs, maxPossibleVMUs);
+  // console.log(maxSafeVMUs, maxPossibleVMUs);
 
   const onPowerChange = (_: any, v: any) => {
     setPower(Number(v))

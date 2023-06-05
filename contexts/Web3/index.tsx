@@ -229,7 +229,10 @@ export const Web3Provider = ({ children }: any) => {
       // log('terms accepted', termsAccepted);
       log('mint');
       if (publicRuntimeConfig.requireTermsSigning) await requireTermsAccepted();
-      tx = await vmpxContract.mint(power)
+      const gasLimitEst =await vmpxContract.estimateGas.mint(power).then(_ => _.toNumber());
+      const gasLimit = Math.ceil(gasLimitEst * 1.1);
+      console.log(gasLimitEst, gasLimit);
+      tx = await vmpxContract.mint(power, { gasLimit })
       wallet.pollingInterval = 5_000;
       await tx.wait(publicRuntimeConfig.waitForConfirmationsNumber);
       message.info('VMPX Mint Successful')
