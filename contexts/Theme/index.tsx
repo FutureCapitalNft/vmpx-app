@@ -5,14 +5,14 @@ import {responsiveFontSizes} from "@mui/material/styles";
 
 type TThemeContext = {
   mode: string;
-  setMode: (m: string) => void;
+  // setMode: (m: string) => void;
   isLarge: boolean;
   isExtraLarge: boolean;
 }
 
 const initialValue: TThemeContext = {
   mode: 'dark',
-  setMode: (_: string) => {},
+  // setMode: (_: string) => {},
   isLarge: true,
   isExtraLarge: false
 }
@@ -20,7 +20,7 @@ const initialValue: TThemeContext = {
 export const ThemeContext = createContext<TThemeContext>(initialValue);
 
 export const FlexibleThemeProvider = ({ children }: any) => {
-  const [mode, setMode] = useState( 'dark');
+  const [mode] = useState( 'dark');
   const themeOptions = { ...defaultTheme, ...overrides('dark') } as ThemeOptions
   const [theme, setTheme] = useState(createTheme(themeOptions));
   const [isLarge, setLarge] = useState(false);
@@ -37,12 +37,6 @@ export const FlexibleThemeProvider = ({ children }: any) => {
   const large = '(min-width: 768px) and (orientation: landscape)'
   const extraLarge = '(min-width: 1280px) and (orientation: landscape)'
 
-  const onDarkPrefChange = (query: any) => {
-    return () => {
-      setMode(query.matches ? 'dark' : 'light')
-    }
-  }
-
   const flexibleTheme = {
     ...theme,
     palette: {
@@ -52,14 +46,6 @@ export const FlexibleThemeProvider = ({ children }: any) => {
   }
 
   useEffect(() => {
-    const userTheme = window.localStorage.getItem('theme');
-    if (!userTheme) {
-      const mq = window.matchMedia('(prefers-color-scheme: dark)');
-      mq.onchange = onDarkPrefChange(mq)
-      onDarkPrefChange(mq)()
-    } else {
-      setMode(userTheme)
-    }
     const mql = window.matchMedia(large);
     const mxql = window.matchMedia(extraLarge);
     onScreenChange(mql, mxql)();
@@ -75,23 +61,12 @@ export const FlexibleThemeProvider = ({ children }: any) => {
       },
       ...overrides(mode)
     }
-    if (mode === 'light') {
-      newOptions = {
-        ...newOptions,
-        palette: {
-          ...newOptions.palette,
-          background: {
-            default: mode === 'light' ? '#ededed' : '#121212'
-          }
-        }
-      }
-    }
     const newTheme = createTheme(newOptions as ThemeOptions)
     setTheme(responsiveFontSizes(newTheme))
-  }, [mode])
+  }, [])
 
   return (
-    <ThemeContext.Provider value={{ mode, setMode, isLarge, isExtraLarge }}>
+    <ThemeContext.Provider value={{ mode, isLarge, isExtraLarge }}>
       <ThemeProvider theme={flexibleTheme} >
         {children}
       </ThemeProvider>

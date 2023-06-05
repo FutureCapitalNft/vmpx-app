@@ -238,7 +238,7 @@ const networkConfigs = ({config}: any): Record<string, TNetworkConfig> => ({
     ...addresses(config, 'ganache'),
   },
   goerli: {
-    isTestnet: true,
+    isTestnet: false,
     gasLimit: 30_000_000,
     chainId: '0x5',
     networkId: 'goerli',

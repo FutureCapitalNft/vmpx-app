@@ -1,17 +1,14 @@
 import getConfig from "next/config";
-import networks from "../config/networks";
 import styles from "../styles/Home.module.css";
 import Head from "next/head";
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import {
   Box,
   Container,
   Typography,
   Grid, Button
 } from "@mui/material";
-// import {NotificationsContext} from "@/contexts/Notifications";
-// import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
-import Link from "next/link";
+
 import {WalletContext} from "@/contexts/Wallet";
 import {useRouter} from "next/router";
 import {ThemeContext} from "@/contexts/Theme";
@@ -65,6 +62,14 @@ const HomePage = ({}: any) => {
               sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
               Drip VMPX on X1
             </Button>
+          <Button
+            size="large"
+            color="success"
+            variant="outlined"
+            onClick={onNetworkClick('goerli')}
+            sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
+            Drip VMPX on Goerli
+          </Button>
         </Container>
       </Box>
     </div>
