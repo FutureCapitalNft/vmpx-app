@@ -75,10 +75,11 @@ const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
   borderRadius: 33,
   height: 60,
   width: 250,
-  backgroundColor: theme.palette?.mode === 'dark' ? '#650F10' : '#da7478',
   textTransform: 'unset',
   fontFamily: 'Gentium Basic',
   color: 'white',
+  '&.Mui-disabled' : { color: 'rgba(255, 255, 255, 0.6)' },
+  backgroundColor: '#650F10',
   '&:hover': { backgroundColor: '#A41E14'}
 }))
 
@@ -119,6 +120,7 @@ const NetworkPage = ({}: any) => {
 
   const remainingToMint = Number((globalState?.cap || 0n) / ethersInWei) - Number(globalState?.totalSupply);
   const maxPossibleVMUs = Math.min(maxSafeVMUs, Math.floor(remainingToMint / batch));
+  console.log(maxSafeVMUs, maxPossibleVMUs);
 
   const onPowerChange = (_: any, v: any) => {
     setPower(Number(v))

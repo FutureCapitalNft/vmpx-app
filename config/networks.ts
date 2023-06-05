@@ -44,6 +44,7 @@ const networkConfigs = ({config}: any): Record<string, TNetworkConfig> => ({
     explorerUrl: 'https://etherscan.io/',
     logoUrl: '/logos/ethereum-logo.png',
     vmpxMessage: config.xenftMessage['mainnet'],
+    maxSafeVMUs: config.maxSafeVMUs['mainnet'],
     ...addresses(config, 'mainnet'),
   },
   bsc: {
@@ -250,6 +251,7 @@ const networkConfigs = ({config}: any): Record<string, TNetworkConfig> => ({
     explorerUrl: 'https://goerli.etherscan.io/',
     logoUrl: '/logos/ethereum-logo.png',
     vmpxMessage: config.xenftMessage['goerli'],
+    maxSafeVMUs: config.maxSafeVMUs['goerli'],
     ...addresses(config, 'goerli'),
   },
   'bsc-testnet': {
@@ -406,6 +408,7 @@ const networkConfigs = ({config}: any): Record<string, TNetworkConfig> => ({
     explorerUrl: 'https://explorer.x1-devnet.xen.network/',
     logoUrl: '/XEN-logo-square-light 512x512.png',
     vmpxMessage: config.xenftMessage['x1'],
+    maxSafeVMUs: config.maxSafeVMUs['x1'],
     ...addresses(config, 'x1'),
   },
   baby_x1: {
