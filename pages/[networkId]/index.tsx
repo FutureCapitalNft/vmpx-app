@@ -7,7 +7,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {LoadingButton} from '@mui/lab';
 import {
   Box, Button,
-  Container, Grid, Slider, Stack,
+  Container, Grid, IconButton, Slider, Stack,
   Typography,
 } from "@mui/material";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -18,13 +18,15 @@ import Link from "next/link";
 import {disclaimer} from "@/components/disclaimer";
 import styled from "@emotion/styled";
 import {ThemeContext} from "@/contexts/Theme";
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import LastPageIcon from '@mui/icons-material/LastPage';
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
 
 const StyledSlider = styled(Slider)(() => ({
-  mx: 8,
-  mt: 4,
   '& .MuiSlider-thumb': {
     color: '#A41E14'
   },
@@ -87,6 +89,9 @@ const NetworkPage = ({}: any) => {
   const hasVmpx = networkId
     && supportedNetworks[networkId]?.contractAddress;
 
+  const maxSafeVMUs = networkId
+    && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256
+
   const ethersInWei = BigInt('1000000000000000000');
 
   const vmpxIsActive = hasVmpx
@@ -109,12 +114,27 @@ const NetworkPage = ({}: any) => {
     // console.log('globalState', globalState);
   }, [globalState]);
 
+  const remainingToMint = Number((globalState?.cap || 0n) / ethersInWei) - Number(globalState?.totalSupply);
+  const maxPossibleVMUs = Math.min(maxSafeVMUs, Math.floor(remainingToMint / batch));
+
   const onPowerChange = (_: any, v: any) => {
     setPower(Number(v))
   }
 
+  const setMinPower = () => {
+    setPower(Number(1))
+  }
+
+  const decPower = () => {
+    setPower(p => Math.max(p - 1, 1))
+  }
+
+  const incPower = () => {
+    setPower(p => Math.min(p + 1, maxPossibleVMUs))
+  }
+
   const setMaxPower = () => {
-    setPower(Number(256))
+    setPower(Number(maxPossibleVMUs))
   }
 
   const doMint = async () => {
@@ -123,6 +143,11 @@ const NetworkPage = ({}: any) => {
     await syncUser(networkId || undefined);
     setLoading(false);
   }
+
+  const pctMinted = globalState?.cap
+    ? (Number(globalState?.totalSupply || 0) * 100 /
+      Number((globalState?.cap || 0n) / ethersInWei)).toFixed(1)
+    : '-';
 
   return (
     <div className={styles.container}>
@@ -158,7 +183,7 @@ const NetworkPage = ({}: any) => {
             variant="subtitle2" sx={{ mb: 4 }}>
             ERC-20
           </StyledSubH>
-          <Grid container sx={{ maxWidth: 400, justifyContent: 'center', margin: 'auto' }}>
+          <Grid container sx={{ maxWidth: 450, justifyContent: 'center', margin: 'auto' }}>
             <Grid item xs={6} sx={{ textAlign: 'left' }}>
                 <StyledP variant="body1">Max. Supply</StyledP>
             </Grid>
@@ -172,31 +197,27 @@ const NetworkPage = ({}: any) => {
             </Grid>
             <Grid item xs={6} sx={{ textAlign: 'right' }}>
                 <StyledP variant="body1">
-                  {globalState?.totalSupply?.toLocaleString()}
+                    ({pctMinted}%) {globalState?.totalSupply?.toLocaleString()}
                 </StyledP>
             </Grid>
+              <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
+                  <StyledP variant="body1" >
+                      Power
+                  </StyledP>
+              </Grid>
             <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
                 <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-around' }}>
-                    <StyledP variant="body1"  style={{ marginRight: '16px' }}>
-                        Power
-                    </StyledP>
+                    <IconButton size="small" onClick={setMinPower}><FirstPageIcon /></IconButton>
+                    <IconButton size="small" onClick={decPower}><RemoveIcon /></IconButton>
                   <StyledSlider
                       value={power}
                       onChange={onPowerChange}
                       valueLabelDisplay="on"
                       step={1}
                       min={1}
-                      max={256} />
-                  <Button
-                      disableRipple
-                      disabled={power === 256}
-                      onClick={setMaxPower}
-                      sx={{
-                        ml: 2,
-                        color: mode === 'dark' ? 'white': 'black'
-                  }}>
-                      MAX
-                  </Button>
+                      max={maxSafeVMUs} sx={{ mx: 2 }}/>
+                    <IconButton size="small" onClick={incPower}><AddIcon /></IconButton>
+                    <IconButton size="small" onClick={setMaxPower}><LastPageIcon /></IconButton>
                 </Stack>
             </Grid>
             <Grid item xs={12} sx={{ py: 2, mt: 2 }}>

@@ -40,6 +40,14 @@ const nextConfig = {
           }
           return res;
         }, {}),
+    maxSafeVMUs: (process.env.SUPPORTED_CHAINS || '')
+        .split(',').filter(_ => !!_)
+        .reduce((res, e) => {
+          if (process.env[`MAX_SAFE_VMUS>_${e.toUpperCase().replace(/-/g, '_')}`]) {
+            res[e] = process.env[`MAX_SAFE_VMUS_${e.toUpperCase().replace(/-/g, '_')}`];
+          }
+          return res;
+        }, {}),
     providerTimeout: 5_000,
     debug: process.env.DEBUG,
     vmpxABI: require('./public/abi/VMPX.json').abi,

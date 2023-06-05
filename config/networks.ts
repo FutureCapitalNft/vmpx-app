@@ -21,6 +21,7 @@ export type TNetworkConfig = {
   logoUrl?: string | Record<string, string> | null;
   contractAddress: string | number | null;
   vmpxMessage?: string | null;
+  maxSafeVMUs?: string;
 }
 
 const addresses = (config: NextConfig, networkId: string) => ({
