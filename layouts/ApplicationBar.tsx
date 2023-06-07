@@ -39,7 +39,8 @@ const ApplicationBar = () => {
 
   const isHomePage = router.asPath === '/';
   const address = networkId && supportedNetworks[networkId]?.contractAddress;
-  const image = `${config.deployedUrl}/vmpx-round-black.png`
+  const image = `${config.deployedUrl}/vmpx-round-black.png`;
+  console.log(image);
 
   return (
     <Box sx={{flexGrow: 1}}>
