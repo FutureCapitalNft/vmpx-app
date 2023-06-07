@@ -23,6 +23,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import {gentumFontClass, italianaFontClass} from "@/lib/fonts";
+import Image from 'next/image'
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -183,11 +184,11 @@ const NetworkPage = ({}: any) => {
             </Link>
         </Container>}
         {vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
-          <StyledH
-            variant="h1"
-            className={italianaFontClass}>
-            VMPX
-          </StyledH>
+          <Image
+              width={245}
+              height={71}
+              src="/VMPX.svg"
+              alt="VMPX logo" />
             <StyledSubH
             variant="subtitle2" sx={{ mb: 4 }}>
             ERC-20

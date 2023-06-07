@@ -1,4 +1,4 @@
-import { Italiana, Gentium_Plus  } from 'next/font/google';
+import { Gentium_Plus  } from 'next/font/google';
 import localFont from 'next/font/local';
 
 const italianaFont = localFont({
