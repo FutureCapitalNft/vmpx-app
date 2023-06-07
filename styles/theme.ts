@@ -26,16 +26,7 @@ export const defaultTheme: ThemeOptions = {
       xl: 1300
     }
   },
-  typography: {
-    fontFamily: [
-      // 'Italiana',
-      'Play',
-      'Arial',
-      'sans-serif'
-    ].join(','),
-    fontWeightRegular: 500,
-    fontSize: 16,
-  },
+
 }
 
 export const overrides = (mode: string) =>
