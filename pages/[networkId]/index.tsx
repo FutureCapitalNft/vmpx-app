@@ -22,7 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import {gentumFontClass, interFontClass} from "@/lib/fonts";
+import {gentumFontClass, italianaFontClass} from "@/lib/fonts";
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -169,7 +169,7 @@ const NetworkPage = ({}: any) => {
         {!vmpxIsActive && <Container sx={{textAlign: 'center' }}>
             <StyledH
                 variant="h3"
-                className={interFontClass}>
+                className={italianaFontClass}>
                 Not here... yet
             </StyledH>
             <Link href="/" passHref >
@@ -185,7 +185,7 @@ const NetworkPage = ({}: any) => {
         {vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
           <StyledH
             variant="h1"
-            className={interFontClass}>
+            className={italianaFontClass}>
             VMPX
           </StyledH>
             <StyledSubH

@@ -1,13 +1,16 @@
-import { Italiana, Gentium_Plus  } from 'next/font/google';
+import { Gentium_Plus  } from 'next/font/google';
+import localFont from 'next/font/local';
 
-const interFont = Italiana({
+
+const italianaFont = localFont({
   display: 'swap',
-  subsets: ['latin'],
+  // subsets: ['latin'],
   variable: '--font-serif',
+  src: "/fonts/Italiana",
   weight: "400"
 });
 
-export const interFontClass = interFont.variable;
+export const italianaFontClass = italianaFont.variable;
 
 const gentumFont = Gentium_Plus({
   display: 'swap',
