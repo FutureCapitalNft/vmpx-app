@@ -22,6 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
+import {gentumFontClass, interFontClass} from "@/lib/fonts";
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -41,9 +42,10 @@ const StyledSlider = styled(Slider)(() => ({
 const StyledP = styled(Typography)(() => ({
   maxWidth: '900px',
   margin: 'auto',
+  fontWeight: 400,
   // fontWeight: 'bold',
   letterSpacing: '0.1rem',
-  fontFamily: 'Gentium Basic',
+  fontFamily: 'Gentium Plus',
 }))
 
 const StyledH = styled(Typography)(() => ({
@@ -56,8 +58,8 @@ const StyledH = styled(Typography)(() => ({
 const StyledSubH = styled(Typography)(({ theme }: any) => ({
   maxWidth: '900px',
   margin: 'auto',
-  fontFamily: 'Gentium Basic',
-  color: theme.palette?.grey?.[theme.palette?.mode === 'dark' ? 500 : 800],
+  fontFamily: 'Gentium Plus',
+  color: theme.palette?.grey?.[theme.palette?.mode === 'dark' ? 400 : 700],
   // fontWeight: 'bold',
   marginBottom: 24,
 }))
@@ -67,8 +69,8 @@ const StyledDisclaimer = styled(Typography)(({ theme }: any) => ({
   margin: 'auto',
   marginTop: 12,
   fontSize: 13,
-  fontFamily: 'Gentium Basic',
-  color: theme.palette?.grey?.[theme.palette?.mode === 'dark' ? 500 : 800]
+  fontFamily: 'Gentium Plus',
+  color: theme.palette?.grey?.[theme.palette?.mode === 'dark' ? 400 : 700],
 }))
 
 const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
@@ -166,7 +168,8 @@ const NetworkPage = ({}: any) => {
       <Box>
         {!vmpxIsActive && <Container sx={{textAlign: 'center' }}>
             <StyledH
-                variant="h3" >
+                variant="h3"
+                className={interFontClass}>
                 Not here... yet
             </StyledH>
             <Link href="/" passHref >
@@ -181,7 +184,8 @@ const NetworkPage = ({}: any) => {
         </Container>}
         {vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
           <StyledH
-            variant="h1" >
+            variant="h1"
+            className={interFontClass}>
             VMPX
           </StyledH>
             <StyledSubH
@@ -190,23 +194,37 @@ const NetworkPage = ({}: any) => {
           </StyledSubH>
           <Grid container sx={{ maxWidth: 450, justifyContent: 'center', margin: 'auto' }}>
             <Grid item xs={6} sx={{ textAlign: 'left' }}>
-                <StyledP variant="body1">Max. Supply</StyledP>
+                <StyledP
+                    className={gentumFontClass}
+                    variant="body1" >
+                    Max. Supply
+                </StyledP>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: 'right' }}>
-                <StyledP variant="body1">
+                <StyledP
+                    variant="body1"
+                    className={gentumFontClass} >
                   {((globalState?.cap || 0n) / ethersInWei).toLocaleString()}
                 </StyledP>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: 'left' }}>
-                <StyledP variant="body1">Minted</StyledP>
+                <StyledP
+                    variant="body1"
+                    className={gentumFontClass} >
+                    Minted
+                </StyledP>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: 'right' }}>
-                <StyledP variant="body1">
+                <StyledP
+                    variant="body1"
+                    className={gentumFontClass} >
                     ({pctMinted}%) {globalState?.totalSupply?.toLocaleString()}
                 </StyledP>
             </Grid>
               <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
-                  <StyledP variant="body1" >
+                  <StyledP
+                      variant="body1"
+                      className={gentumFontClass} >
                       Power
                   </StyledP>
               </Grid>

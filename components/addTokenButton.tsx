@@ -6,7 +6,7 @@ import {WalletContext} from "../contexts/Wallet";
 const AddTokenButton = ({ type = 'XEN', address, image, tokenType = 'ERC20' }: any) => {
   const { addToken } = useContext(WalletContext);
   const onAddTokenClick = () => {
-    const imageUrl = image.startsWith('http')
+    const imageUrl = image.startsWith('http') || image.startsWith('/')
       ? image
       : `https://xen.network/XEN-logo-square-dark-512x512.png`
     console.log('add', type, address, imageUrl)
@@ -25,7 +25,7 @@ const AddTokenButton = ({ type = 'XEN', address, image, tokenType = 'ERC20' }: a
             size="small"
             onClick={onAddTokenClick}
             sx={{ borderRadius: 25, textTransform: 'unset' }} >
-      <ControlPointDuplicateIcon style={{ color: 'grey' }} />
+      <ControlPointDuplicateIcon />
       </IconButton>
     </Tooltip>
   )
