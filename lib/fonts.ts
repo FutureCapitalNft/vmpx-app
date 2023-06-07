@@ -6,7 +6,7 @@ const italianaFont = localFont({
   display: 'swap',
   // subsets: ['latin'],
   variable: '--font-serif',
-  src: "./styles/fonts/Italiana/Italiana-Regular.ttf",
+  src: "../styles/fonts/Italiana/Italiana-Regular.ttf",
   weight: "400"
 });
 
