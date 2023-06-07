@@ -9,7 +9,7 @@ const AddTokenButton = ({ type = 'XEN', address, image, tokenType = 'ERC20' }: a
     const imageUrl = image.startsWith('http') || image.startsWith('/')
       ? image
       : `https://xen.network/XEN-logo-square-dark-512x512.png`
-    console.log('add', type, address, imageUrl)
+    // console.log('add', type, address, imageUrl)
     if (address && image) {
       addToken(address, imageUrl, type)
         .then(() => {
