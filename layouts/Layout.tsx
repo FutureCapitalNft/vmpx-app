@@ -6,8 +6,7 @@ import ApplicationBar from "./ApplicationBar";
 import {FlexibleThemeProvider} from "@/contexts/Theme";
 
 const Layout = ({children, contractAddress, projectId}: any) => {
-  // TODO replace
-  // const { notifications, setProcessing } = useContext(NotificationsContext);
+  console.log(projectId)
   return (
     <FlexibleThemeProvider>
       <CssBaseline/>
@@ -15,8 +14,6 @@ const Layout = ({children, contractAddress, projectId}: any) => {
       <ApplicationBar/>
       <main className={styles.main}
             style={{ minHeight: '90vh' }}>
-        {/*<ProcessingScreen open={notifications.isProcessing}
-                          onClose={() => setProcessing(false)} />*/}
         <section style={{width: '100%'}}>
           {children}
         </section>

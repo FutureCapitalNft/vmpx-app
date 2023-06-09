@@ -17,7 +17,6 @@ import {TVmpxGlobalState} from "@/contexts/types";
 import Link from "next/link";
 import {disclaimer} from "@/components/disclaimer";
 import styled from "@emotion/styled";
-import {ThemeContext} from "@/contexts/Theme";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -87,7 +86,6 @@ const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
 }))
 
 const NetworkPage = ({}: any) => {
-  const { mode } = useContext(ThemeContext);
   const {networkId} = useContext(CurrentNetworkContext);
   const {ready, initState, syncState, syncUser, mint, state} = useContext(Web3Context);
   const [power, setPower] = useState(1);
