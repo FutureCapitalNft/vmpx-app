@@ -4,7 +4,7 @@ module.exports = {
     isInternal: true,
     name: 'VMPX',
     copyright: "Copyright ©",
-    owner: 'VMPX',
+    owner: 'Fair Crypto Foundation',
     license: '',
     tokenSymbol: 'VMPX',
     web: 'https://vmpx.io',

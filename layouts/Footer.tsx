@@ -7,6 +7,7 @@ import networks from "../config/networks";
 import {ThemeContext} from "@/contexts/Theme";
 import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 import {projects} from "@/config/projects";
+import Link from "next/link";
 
 const TwitterLogo = createSvgIcon(<path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.5 8.778c-.441.196-.916.328-1.414.388.509-.305.898-.787 1.083-1.362-.476.282-1.003.487-1.564.597-.448-.479-1.089-.778-1.796-.778-1.59 0-2.758 1.483-2.399 3.023-2.045-.103-3.86-1.083-5.074-2.572-.645 1.106-.334 2.554.762 3.287-.403-.013-.782-.124-1.114-.308-.027 1.14.791 2.207 1.975 2.445-.346.094-.726.116-1.112.042.313.978 1.224 1.689 2.3 1.709-1.037.812-2.34 1.175-3.647 1.021 1.09.699 2.383 1.106 3.773 1.106 4.572 0 7.154-3.861 6.998-7.324.482-.346.899-.78 1.229-1.274z"/>, 'twitter')
 const TelegramLogo = createSvgIcon(<path id="telegram-5" d="M12,0c-6.627,0 -12,5.373 -12,12c0,6.627 5.373,12 12,12c6.627,0 12,-5.373 12,-12c0,-6.627 -5.373,-12 -12,-12Zm0,2c5.514,0 10,4.486 10,10c0,5.514 -4.486,10 -10,10c-5.514,0 -10,-4.486 -10,-10c0,-5.514 4.486,-10 10,-10Zm2.692,14.889c0.161,0.115 0.368,0.143 0.553,0.073c0.185,-0.07 0.322,-0.228 0.362,-0.42c0.435,-2.042 1.489,-7.211 1.884,-9.068c0.03,-0.14 -0.019,-0.285 -0.129,-0.379c-0.11,-0.093 -0.263,-0.12 -0.399,-0.07c-2.096,0.776 -8.553,3.198 -11.192,4.175c-0.168,0.062 -0.277,0.223 -0.271,0.4c0.006,0.177 0.125,0.33 0.296,0.381c1.184,0.354 2.738,0.847 2.738,0.847c0,0 0.725,2.193 1.104,3.308c0.047,0.139 0.157,0.25 0.301,0.287c0.145,0.038 0.298,-0.001 0.406,-0.103c0.608,-0.574 1.548,-1.461 1.548,-1.461c0,0 1.786,1.309 2.799,2.03Zm-5.505,-4.338l0.84,2.769l0.186,-1.754c0,0 3.243,-2.925 5.092,-4.593c0.055,-0.048 0.062,-0.13 0.017,-0.188c-0.045,-0.057 -0.126,-0.071 -0.188,-0.032c-2.143,1.368 -5.947,3.798 -5.947,3.798Z"/>, 'telegram');
@@ -27,11 +28,20 @@ const StyledAnchor = styled('a')(({ theme }: any) => ({
   }
 }));
 
+const StyledLink = styled(Link)(({ theme }: any) => ({
+  color: theme.palette.text.secondary,
+  textDecoration: 'none',
+  '&:hover': {
+    color: theme.palette.text.primary
+  }
+}));
+
 const Footer = ({ contractAddress: mainAddress, projectId = 'vmpx' }
                   : { contractAddress: string | number | undefined, projectId: string }) => {
   const { mode } = useContext(ThemeContext);
   const { networkId } = useContext(CurrentNetworkContext);
   const project = projects[projectId];
+  console.log(projectId, project)
 
   const isDark = mode === 'dark';
   const currentNetwork = supportedNetworks[networkId || 'mainnet'];
@@ -51,7 +61,17 @@ const Footer = ({ contractAddress: mainAddress, projectId = 'vmpx' }
   return (
     <footer className={styles.footer}>
       <Grid container sx={{ alignItems: 'center', pt: 2 }} >
-        <Grid item xs={12} md={6} >
+        {isHomePage && <Grid item xs={12} md={12} sx={{ textAlign: 'center' }}>
+            <Typography variant="body2" sx={{ fontSize: 14, display: { xs: 'none', md: 'block' } }}>
+              {project.copyright} 2023 by <StyledAnchor style={{ display: 'unset' }}
+                                                        href={project.web}
+                                                        target="_blank"
+                                                        rel="noreferrer">
+              {project.owner || project.name}
+            </StyledAnchor>. {project.license}
+            </Typography>
+        </Grid>}
+        {!isHomePage && <Grid item xs={12} md={6} >
           <Container >
             <Stack direction="row" sx={{justifyContent: {xs: 'center', md: 'right'}, alignItems: 'center'}}>
               {project?.twitter && <Box sx={{px: 1}}>
@@ -119,8 +139,8 @@ const Footer = ({ contractAddress: mainAddress, projectId = 'vmpx' }
               </Box>}
             </Stack>
           </Container>
-        </Grid>
-        <Grid item xs={12} md={6} >
+        </Grid>}
+        {!isHomePage && <Grid item xs={12} md={6} >
           {!isHomePage && <Typography variant="body2"
                                       sx={{
                                         fontSize: 14,
@@ -144,14 +164,13 @@ const Footer = ({ contractAddress: mainAddress, projectId = 'vmpx' }
                                                       target="_blank"
                                                       rel="noreferrer">
             {project.owner || project.name}
-          </StyledAnchor>. {project.license}<StyledAnchor style={{ display: 'unset' }}
+          </StyledAnchor>. {project.license}<StyledLink style={{ display: 'unset' }}
                                                           href={project.termsText}
-                                                          target="_blank"
                                                           rel="noreferrer">
             Terms Of Use
-          </StyledAnchor>
+          </StyledLink>
           </Typography>
-        </Grid>
+        </Grid>}
       </Grid>
     </footer>
   )

@@ -112,11 +112,11 @@ const nextConfig = {
     },
   async redirects() {
     return [
-      {
-        source: '/terms.html',
-        destination: `/terms`,
-        permanent: true
-      },
+      //{
+      //  source: '/terms.html',
+      //  destination: `/terms`,
+      //  permanent: true
+      //},
     ]
   },
 

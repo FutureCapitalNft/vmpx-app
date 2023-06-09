@@ -41,7 +41,6 @@ const ApplicationBar = () => {
   const address = networkId && supportedNetworks[networkId]?.contractAddress;
   const isDev = config.nodeEnv === 'development';
   const image = `${isDev ? 'http://' : 'https://'}${config.deployedUrl}/vmpx-round-black.png`;
-  console.log(image);
 
   return (
     <Box sx={{flexGrow: 1}}>

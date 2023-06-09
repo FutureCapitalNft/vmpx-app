@@ -13,7 +13,6 @@ import {WalletContext} from "@/contexts/Wallet";
 import {useRouter} from "next/router";
 import {ThemeContext} from "@/contexts/Theme";
 const {publicRuntimeConfig: config} = getConfig();
-// const supportedNetworks = networks({config});
 
 const HomePage = ({}: any) => {
   const { isLarge } = useContext(ThemeContext);
