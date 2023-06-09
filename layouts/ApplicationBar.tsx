@@ -53,10 +53,10 @@ const ApplicationBar = () => {
             <Avatar src={'/favicon.ico'} />
           </Link>
           <Stack direction="row" sx={{ alignItems: 'center' }} spacing={1}>
-            <AddTokenButton
+            {!isHomePage && <AddTokenButton
               type="VMPX"
               address={address}
-              image={image} />
+              image={image} />}
           {!isHomePage && <Box sx={{
             mx: 2,
             color: theme.palette.text.primary,

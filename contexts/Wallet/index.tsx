@@ -309,14 +309,14 @@ export const WalletProvider = ({ children }: any) => {
       });
 
       if (wasAdded) {
-        message.info(`XEN Crypto added to wallet`)
+        message.info(`VMPX added to wallet`)
 
         ga.event({
           action: 'add_token_success',
         })
       }
     } catch (e: any) {
-      message.warning(`Error adding XEN Crypto: ${e.message}`)
+      message.warning(`Error adding VMPX: ${e.message}`)
       ga.event({
         action: 'add_token_failure',
       })

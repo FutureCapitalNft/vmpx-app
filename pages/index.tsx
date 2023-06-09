@@ -6,7 +6,7 @@ import {
   Box,
   Container,
   Typography,
-  Grid, Button
+  Button
 } from "@mui/material";
 
 import {WalletContext} from "@/contexts/Wallet";
@@ -33,7 +33,7 @@ const HomePage = ({}: any) => {
       <Head>
         <title>{`VMPX`}</title>
         <meta name="description"
-              content="VMPX. Fair Launch and distribution"/>
+              content="VMPX ERC-20 Token. Fair Launch and distribution"/>
         <link rel="icon" href="/favicon.ico"/>
       </Head>
       <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh'}} >
@@ -51,8 +51,7 @@ const HomePage = ({}: any) => {
             marginBottom: '1rem',
           }} variant="h5">
             Thirsty...? 🧛 Welcome to VMPX World!<br/>
-            Hurry, drip yourself some, while it lasts... <br/>
-            Your OGV rating holds the keys to the future...
+            Hurry, mint yourself some, while it lasts...
           </Typography>
             <Button
               size="large"
@@ -60,16 +59,16 @@ const HomePage = ({}: any) => {
               variant="outlined"
               onClick={onNetworkClick('x1')}
               sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
-              Drip VMPX on X1
+              Mint VMPX on X1
             </Button>
-          <Button
+          {/*<Button
             size="large"
             color="success"
             variant="outlined"
             onClick={onNetworkClick('goerli')}
             sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
-            Drip VMPX on Goerli
-          </Button>
+            Mint VMPX on Goerli
+          </Button>*/}
         </Container>
       </Box>
     </div>
