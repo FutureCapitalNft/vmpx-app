@@ -17,6 +17,7 @@ import {watchNetwork} from "@wagmi/core";
 import {VmpxContext} from "@/contexts/VMPX";
 import {useAccount, useNetwork} from "wagmi";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
+import {NotificationsContext} from "@/contexts/Notifications";
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -35,6 +36,7 @@ interface LinkTabProps {
 const ApplicationBar = () => {
   const theme = useTheme();
   const router = useRouter();
+  const {message} = useContext(NotificationsContext);
   const {networkId} = useContext(CurrentNetworkContext);
   const {chain} = useNetwork();
   const {address} = useAccount();
@@ -50,6 +52,10 @@ const ApplicationBar = () => {
   useEffect(() => {
     const unwatch = watchNetwork((network) => {
       // console.log('???', router.query, network.chain);
+      if (network?.chain?.unsupported) {
+        message.warning('Unsupported network')
+        return;
+      }
       const walletNetworkId = Object.values(supportedNetworks)
         .find((n) => Number(n?.chainId) === Number(network?.chain?.id))
         ?.networkId;

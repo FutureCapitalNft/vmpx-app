@@ -101,9 +101,6 @@ const NetworkPage = ({}: any) => {
   const hasVmpx = networkId
     && supportedNetworks[networkId]?.contractAddress;
 
-  const maxSafeVMUs = networkId
-    && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256
-
   const ethersInWei = BigInt('1000000000000000000');
 
   const vmpxIsActive = hasVmpx
@@ -112,6 +109,9 @@ const NetworkPage = ({}: any) => {
 
   const globalState: TVmpx = global[chain?.id as number];
   const batch = Number((globalState?.batch || 0n) / ethersInWei);
+
+  const maxSafeVMUs = networkId
+    && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256;
 
   useEffect(() => {
     console.log('globalState', globalState);
@@ -122,10 +122,13 @@ const NetworkPage = ({}: any) => {
     - Number((globalState?.totalSupply || 0n) / ethersInWei)
     : 0;
   const maxPossibleVMUs = Math.min(maxSafeVMUs, Math.floor(remainingToMint / batch));
-  // console.log(maxSafeVMUs, maxPossibleVMUs);
 
   const onPowerChange = (_: any, v: any) => {
-    setPower(Number(v))
+    if (Number(v) > maxPossibleVMUs) {
+      setPower(maxPossibleVMUs)
+    } else {
+      setPower(Number(v))
+    }
   }
 
   const setMinPower = () => {
@@ -186,8 +189,16 @@ const NetworkPage = ({}: any) => {
     }
   }
 
-  const pctMinted = globalState?.cap
+  const pctMinted = globalState
     ? Number(globalState?.totalSupply * 100n / globalState?.cap).toFixed(1)
+    : '-';
+
+  const minted = globalState
+    ? ((globalState?.totalSupply || 0n) / ethersInWei).toLocaleString()
+    : '-';
+
+  const maxSupply = globalState
+    ? ((globalState?.cap || 0n) / ethersInWei).toLocaleString()
     : '-';
 
   return (
@@ -238,7 +249,7 @@ const NetworkPage = ({}: any) => {
                 <StyledP
                     variant="body1"
                     className={gentumFontClass} >
-                  {((globalState?.cap || 0n) / ethersInWei).toLocaleString()}
+                  {maxSupply}
                 </StyledP>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: 'left' }}>
@@ -252,7 +263,7 @@ const NetworkPage = ({}: any) => {
                 <StyledP
                     variant="body1"
                     className={gentumFontClass} >
-                    ({pctMinted}%) {((globalState?.totalSupply || 0n) / ethersInWei).toLocaleString()}
+                  {!chain?.unsupported && `(${pctMinted}%)`} {minted}
                 </StyledP>
             </Grid>
               <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
@@ -264,17 +275,39 @@ const NetworkPage = ({}: any) => {
               </Grid>
             <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
                 <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-around' }}>
-                    <IconButton size="small" onClick={setMinPower}><FirstPageIcon /></IconButton>
-                    <IconButton size="small" onClick={decPower}><RemoveIcon /></IconButton>
+                    <IconButton
+                        size="small"
+                        disabled={chain?.unsupported}
+                        onClick={setMinPower}>
+                        <FirstPageIcon />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        disabled={chain?.unsupported}
+                        onClick={decPower}>
+                        <RemoveIcon />
+                    </IconButton>
                   <StyledSlider
                       value={power}
+                      disabled={chain?.unsupported}
                       onChange={onPowerChange}
-                      valueLabelDisplay="on"
+                      valueLabelDisplay={chain?.unsupported ? "off" : "on"}
                       step={1}
                       min={1}
-                      max={maxSafeVMUs} sx={{ mx: 2 }}/>
-                    <IconButton size="small" onClick={incPower}><AddIcon /></IconButton>
-                    <IconButton size="small" onClick={setMaxPower}><LastPageIcon /></IconButton>
+                      max={maxSafeVMUs}
+                      sx={{ mx: 2 }}/>
+                    <IconButton
+                        size="small"
+                        disabled={chain?.unsupported}
+                        onClick={incPower}>
+                        <AddIcon />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        disabled={chain?.unsupported}
+                        onClick={setMaxPower}>
+                        <LastPageIcon />
+                    </IconButton>
                 </Stack>
             </Grid>
             <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
@@ -282,13 +315,15 @@ const NetworkPage = ({}: any) => {
                 size="large"
                 color="error"
                 variant={loading ? "outlined" : "contained"}
-                disabled={!mint}
+                disabled={!mint || chain?.unsupported}
                 disableElevation
                 loading={loading}
                 loadingPosition="end"
-                endIcon={<KeyboardArrowRightIcon/>}
+                endIcon={!chain?.unsupported ? <KeyboardArrowRightIcon/> : <></>}
                 onClick={doMint} >
-                {loading ? 'Minting' : `Mint ${(power * batch).toLocaleString()} VMPX`}
+                {chain?.unsupported && 'Unsupported network'}
+                {!chain?.unsupported && !loading && `Mint ${(power * batch).toLocaleString()} VMPX`}
+                {!chain?.unsupported && loading && 'Minting'}
               </StyledLoadingButton>
             </Grid>
           </Grid>

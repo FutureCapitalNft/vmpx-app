@@ -11,7 +11,7 @@ import {
 
 import {useRouter} from "next/router";
 import {ThemeContext} from "@/contexts/Theme";
-import {useNetwork, useSwitchNetwork} from "wagmi";
+import {useAccount, useNetwork, useSwitchNetwork} from "wagmi";
 import networks from "@/config/networks";
 
 const {publicRuntimeConfig} = getConfig();
@@ -22,6 +22,7 @@ const HomePage = ({}: any) => {
   const { isLarge } = useContext(ThemeContext);
   const router = useRouter();
   const { chain } = useNetwork();
+  const { address } = useAccount();
 
   const { switchNetwork } = useSwitchNetwork({
     onSuccess: (data) => {
@@ -76,11 +77,12 @@ const HomePage = ({}: any) => {
           </Typography>
             <Button
               size="large"
+              disabled={!address}
               color="success"
               variant="outlined"
               onClick={onNetworkClick('x1')}
               sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
-              Mint VMPX on X1
+              {!!address ? 'Mint VMPX on X1' : 'Please Connect Wallet'}
             </Button>
           {/*<Button
             size="large"
