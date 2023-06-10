@@ -89,7 +89,7 @@ const ApplicationBar = () => {
             <Avatar src={'/favicon.ico'} />
           </Link>
           <Stack direction="row" sx={{ alignItems: 'center' }} spacing={1}>
-            {!isHomePage && <AddTokenButton
+            {!isHomePage && !chain?.unsupported && <AddTokenButton
               type="VMPX"
               address={contractAddress}
               image={image} />}

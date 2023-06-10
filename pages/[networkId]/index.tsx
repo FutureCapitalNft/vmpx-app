@@ -105,7 +105,7 @@ const NetworkPage = ({}: any) => {
     && typeof supportedNetworks[networkId].contractAddress === 'string'
     && isAddress(supportedNetworks[networkId].contractAddress?.toString() || '');
 
-  console.log(networkId, hasVmpx, vmpxIsActive)
+  // console.log(networkId, hasVmpx, vmpxIsActive)
 
   const globalState: TVmpx = global[chain?.id as number];
   const batch = Number((globalState?.batch || 0n) / ethersInWei);
