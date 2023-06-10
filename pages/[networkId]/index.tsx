@@ -89,6 +89,7 @@ const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
   '&:hover': { backgroundColor: '#A41E14'}
 }))
 
+const ethersInWei = BigInt('1000000000000000000');
 
 const NetworkPage = ({}: any) => {
   const {message} = useContext(NotificationsContext);
@@ -98,14 +99,13 @@ const NetworkPage = ({}: any) => {
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
   const [power, setPower] = useState(1);
 
-  const hasVmpx = networkId
-    && supportedNetworks[networkId]?.contractAddress;
-
-  const ethersInWei = BigInt('1000000000000000000');
+  const hasVmpx = !!(networkId && supportedNetworks[networkId]?.contractAddress);
 
   const vmpxIsActive = hasVmpx
     && typeof supportedNetworks[networkId].contractAddress === 'string'
     && isAddress(supportedNetworks[networkId].contractAddress?.toString() || '');
+
+  console.log(networkId, hasVmpx, vmpxIsActive)
 
   const globalState: TVmpx = global[chain?.id as number];
   const batch = Number((globalState?.batch || 0n) / ethersInWei);
@@ -114,7 +114,7 @@ const NetworkPage = ({}: any) => {
     && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256;
 
   useEffect(() => {
-    console.log('globalState', globalState);
+    // console.log('globalState', globalState);
   }, [globalState]);
 
   const remainingToMint = globalState?.totalSupply > 0n

@@ -65,7 +65,7 @@ const ApplicationBar = () => {
       const subPath = path
         .replace(networkId, '')
         .replaceAll(/\//g, '');
-      console.log(path, subPath)
+      // console.log(path, subPath)
       if (networkId) {
         const url = `/${walletNetworkId}/${subPath}`;
         return router.replace(url)

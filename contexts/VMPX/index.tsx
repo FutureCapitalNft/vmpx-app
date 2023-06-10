@@ -40,7 +40,7 @@ export const VmpxProvider = ({ children }: any) => {
       { ...vmpxContract(chain), functionName: 'totalSupply', chainId: chain?.id },
     ],
     onSuccess: (init) => {
-      console.log('init', chain?.id, init)
+      // console.log('init', chain?.id, init)
       const [
         { result: cap },
         { result: cycles },

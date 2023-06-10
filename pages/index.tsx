@@ -28,7 +28,7 @@ const HomePage = ({}: any) => {
     onSuccess: (data) => {
       const targetNetwork = Object.values(supportedNetworks)
         .find(n => Number(n?.chainId) === chain?.id)
-      console.log(data)
+      // console.log(data)
       router.replace(`/${targetNetwork?.networkId}`)
         .catch(_ => {
           // Do nothing; should already be handled
