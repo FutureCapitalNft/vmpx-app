@@ -11,9 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import {Web3Context} from "@/contexts/Web3";
 import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
-import {TVmpxGlobalState} from "@/contexts/types";
 import Link from "next/link";
 import {disclaimer} from "@/components/disclaimer";
 import styled from "@emotion/styled";
@@ -23,9 +21,15 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import {gentumFontClass, italianaFontClass} from "@/lib/fonts";
 import Image from 'next/image'
+import {VmpxContext} from "@/contexts/VMPX";
+import {TVmpx} from "@/contexts/VMPX/types";
+import {useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction} from "wagmi";
+import {NotificationsContext} from "@/contexts/Notifications";
+import {ConsentContext} from "@/contexts/Consent";
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
+const contractABI = config.vmpxABI;
 
 const StyledSlider = styled(Slider)(() => ({
   '& .MuiSlider-thumb': {
@@ -85,11 +89,14 @@ const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
   '&:hover': { backgroundColor: '#A41E14'}
 }))
 
+
 const NetworkPage = ({}: any) => {
+  const {message} = useContext(NotificationsContext);
   const {networkId} = useContext(CurrentNetworkContext);
-  const {ready, initState, syncState, syncUser, mint, state} = useContext(Web3Context);
+  const { requestTermsAcceptance, termsAccepted } = useContext(ConsentContext);
+  const {chain} = useNetwork();
+  const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
   const [power, setPower] = useState(1);
-  const [loading, setLoading] = useState(false);
 
   const hasVmpx = networkId
     && supportedNetworks[networkId]?.contractAddress;
@@ -103,23 +110,17 @@ const NetworkPage = ({}: any) => {
     && typeof supportedNetworks[networkId].contractAddress === 'string'
     && isAddress(supportedNetworks[networkId].contractAddress?.toString() || '');
 
-  const globalState: TVmpxGlobalState = state.globalState[networkId as any];
+  const globalState: TVmpx = global[chain?.id as number];
   const batch = Number((globalState?.batch || 0n) / ethersInWei);
 
   useEffect(() => {
-    // console.log('index', ready, networkId);
-    if (ready && networkId && vmpxIsActive) {
-      initState(networkId)
-        .then(_ => syncState(networkId))
-        .then(_ => syncUser(networkId))
-    }
-  }, [ready, networkId, vmpxIsActive]);
-
-  useEffect(() => {
-    // console.log('globalState', globalState);
+    console.log('globalState', globalState);
   }, [globalState]);
 
-  const remainingToMint = Number((globalState?.cap || 0n) / ethersInWei) - Number(globalState?.totalSupply);
+  const remainingToMint = globalState?.totalSupply > 0n
+    ? Number((globalState?.cap || 0n) / ethersInWei)
+    - Number((globalState?.totalSupply || 0n) / ethersInWei)
+    : 0;
   const maxPossibleVMUs = Math.min(maxSafeVMUs, Math.floor(remainingToMint / batch));
   // console.log(maxSafeVMUs, maxPossibleVMUs);
 
@@ -143,16 +144,50 @@ const NetworkPage = ({}: any) => {
     setPower(Number(maxPossibleVMUs))
   }
 
+  const { config: mintConfig } = usePrepareContractWrite({
+    address: supportedNetworks[networkId!]?.contractAddress,
+    abi: contractABI,
+    chainId: chain?.id,
+    functionName: 'mint',
+    args: [power]
+  } as any);
+
+  const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
+
+  const { isLoading: isMintWaiting } = useWaitForTransaction({
+    ...mintTx,
+    confirmations: 1,
+    onSuccess: () => {
+      message.info('VMPX Minted')
+      refetchUserBalance()
+        .then(() => refetchVmpx())
+    }
+  })
+
+  const loading = isMintLoading || isMintWaiting;
+
+  const requireTermsAccepted = async () => {
+    if (!termsAccepted) {
+      const res = await requestTermsAcceptance();
+      if (!res) throw new Error('Terms not accepted');
+    }
+  }
+
   const doMint = async () => {
-    setLoading(true);
-    await mint(power);
-    await syncUser(networkId || undefined);
-    setLoading(false);
+    try {
+      if (config.requireTermsSigning) await requireTermsAccepted();
+      mint && await mint();
+    } catch (e: any) {
+      if (e.shortMessage) {
+        message.warning(e.shortMessage);
+      } else if (e.message) {
+        message.warning(e.message);
+      }
+    }
   }
 
   const pctMinted = globalState?.cap
-    ? (Number(globalState?.totalSupply || 0) * 100 /
-      Number((globalState?.cap || 0n) / ethersInWei)).toFixed(1)
+    ? Number(globalState?.totalSupply * 100n / globalState?.cap).toFixed(1)
     : '-';
 
   return (
@@ -217,7 +252,7 @@ const NetworkPage = ({}: any) => {
                 <StyledP
                     variant="body1"
                     className={gentumFontClass} >
-                    ({pctMinted}%) {globalState?.totalSupply?.toLocaleString()}
+                    ({pctMinted}%) {((globalState?.totalSupply || 0n) / ethersInWei).toLocaleString()}
                 </StyledP>
             </Grid>
               <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
@@ -247,6 +282,7 @@ const NetworkPage = ({}: any) => {
                 size="large"
                 color="error"
                 variant={loading ? "outlined" : "contained"}
+                disabled={!mint}
                 disableElevation
                 loading={loading}
                 loadingPosition="end"

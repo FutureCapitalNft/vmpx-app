@@ -41,7 +41,6 @@ const Footer = ({ contractAddress: mainAddress, projectId = 'vmpx' }
   const { mode } = useContext(ThemeContext);
   const { networkId } = useContext(CurrentNetworkContext);
   const project = projects[projectId];
-  console.log(projectId, project)
 
   const isDark = mode === 'dark';
   const currentNetwork = supportedNetworks[networkId || 'mainnet'];

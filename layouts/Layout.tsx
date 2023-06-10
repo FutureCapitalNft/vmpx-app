@@ -6,7 +6,6 @@ import ApplicationBar from "./ApplicationBar";
 import {FlexibleThemeProvider} from "@/contexts/Theme";
 
 const Layout = ({children, contractAddress, projectId}: any) => {
-  console.log(projectId)
   return (
     <FlexibleThemeProvider>
       <CssBaseline/>

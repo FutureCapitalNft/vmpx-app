@@ -5,17 +5,18 @@ import {
   Toolbar,
   useTheme
 } from "@mui/material";
-import SelectNetworkButton from "../components/selectNetworkButton";
-import ConnectWalletButton from "../components/connectWalletButton";
-import React, {Dispatch, SetStateAction, useContext} from "react";
+import React, {Dispatch, SetStateAction, useContext, useEffect} from "react";
 import {useRouter} from "next/router";
 import getConfig from "next/config";
 import Alerts from "./Alerts";
-import {Web3Context} from "@/contexts/Web3";
 import Link from "next/link";
 import AddTokenButton from "@/components/addTokenButton";
 import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 import networks from "@/config/networks";
+import {watchNetwork} from "@wagmi/core";
+import {VmpxContext} from "@/contexts/VMPX";
+import {useAccount, useNetwork} from "wagmi";
+import {ConnectButton} from "@rainbow-me/rainbowkit";
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -35,12 +36,42 @@ const ApplicationBar = () => {
   const theme = useTheme();
   const router = useRouter();
   const {networkId} = useContext(CurrentNetworkContext);
-  const {state} = useContext(Web3Context);
+  const {chain} = useNetwork();
+  const {address} = useAccount();
+  const {user} = useContext(VmpxContext);
+
+  const balance = user[chain?.id!]?.[address!]?.balance || 0n;
 
   const isHomePage = router.asPath === '/';
-  const address = networkId && supportedNetworks[networkId]?.contractAddress;
+  const contractAddress = networkId && supportedNetworks[networkId]?.contractAddress;
   const isDev = config.nodeEnv === 'development';
   const image = `${isDev ? 'http://' : 'https://'}${config.deployedUrl}/vmpx-round-black.png`;
+
+  useEffect(() => {
+    const unwatch = watchNetwork((network) => {
+      // console.log('???', router.query, network.chain);
+      const walletNetworkId = Object.values(supportedNetworks)
+        .find((n) => Number(n?.chainId) === Number(network?.chain?.id))
+        ?.networkId;
+      const { networkId: id = '' } = router.query;
+      const networkId = Array.isArray(id) ? id[0] : id;
+      const path = router.asPath;
+      const subPath = path
+        .replace(networkId, '')
+        .replaceAll(/\//g, '');
+      console.log(path, subPath)
+      if (networkId) {
+        const url = `/${walletNetworkId}/${subPath}`;
+        return router.replace(url)
+          .then(() => walletNetworkId);
+      } else {
+        return Promise.resolve(networkId);
+      }
+    })
+    return () => {
+      unwatch();
+    }
+  }, [networkId])
 
   return (
     <Box sx={{flexGrow: 1}}>
@@ -54,17 +85,17 @@ const ApplicationBar = () => {
           <Stack direction="row" sx={{ alignItems: 'center' }} spacing={1}>
             {!isHomePage && <AddTokenButton
               type="VMPX"
-              address={address}
+              address={contractAddress}
               image={image} />}
-          {!isHomePage && <Box sx={{
-            mx: 2,
+          <Box sx={{
+            px: 2,
+            marginRight: '16px',
             color: theme.palette.text.primary,
             display: {xs: 'none', xl: 'block'}
           }}>
-              VMPX: {(state.user?.balance || 0).toLocaleString()}
-          </Box>}
-          <SelectNetworkButton/>
-          <ConnectWalletButton/>
+              VMPX: {(balance / BigInt('1000000000000000000')).toLocaleString()}
+          </Box>
+            <ConnectButton />
           </Stack>
         </Toolbar>
       </AppBar>
