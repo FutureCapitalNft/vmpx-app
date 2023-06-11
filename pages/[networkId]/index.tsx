@@ -117,7 +117,7 @@ const NetworkPage = ({}: any) => {
     // console.log('globalState', globalState);
   }, [globalState]);
 
-  const remainingToMint = globalState?.totalSupply > 0n
+  const remainingToMint = globalState
     ? Number((globalState?.cap || 0n) / ethersInWei)
     - Number((globalState?.totalSupply || 0n) / ethersInWei)
     : 0;
