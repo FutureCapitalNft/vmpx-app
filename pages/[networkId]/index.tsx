@@ -135,7 +135,7 @@ const NetworkPage = ({}: any) => {
       args: [power],
       account: address as any
     }).then(setGas)
-  }, [power]);
+  }, [power, networkId, address]);
 
   const remainingToMint = globalState
     ? Number((globalState?.cap || 0n) / ethersInWei)
