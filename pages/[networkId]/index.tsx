@@ -23,7 +23,14 @@ import {gentumFontClass, italianaFontClass} from "@/lib/fonts";
 import Image from 'next/image'
 import {VmpxContext} from "@/contexts/VMPX";
 import {TVmpx} from "@/contexts/VMPX/types";
-import {useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction} from "wagmi";
+import {
+  useAccount,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  usePublicClient,
+  useWaitForTransaction
+} from "wagmi";
 import {NotificationsContext} from "@/contexts/Notifications";
 import {ConsentContext} from "@/contexts/Consent";
 
@@ -96,8 +103,11 @@ const NetworkPage = ({}: any) => {
   const {networkId} = useContext(CurrentNetworkContext);
   const { requestTermsAcceptance, termsAccepted } = useContext(ConsentContext);
   const {chain} = useNetwork();
+  const {address} = useAccount();
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
+  const publicClient = usePublicClient({ chainId: chain?.id });
   const [power, setPower] = useState(1);
+  const [gas, setGas] = useState<bigint>(0n);
 
   const hasVmpx = !!(networkId && supportedNetworks[networkId]?.contractAddress);
 
@@ -116,6 +126,16 @@ const NetworkPage = ({}: any) => {
   useEffect(() => {
     // console.log('globalState', globalState);
   }, [globalState]);
+
+  useEffect(() => {
+    publicClient.estimateContractGas({
+      address: supportedNetworks[networkId!]?.contractAddress as any,
+      abi: contractABI,
+      functionName: 'mint',
+      args: [power],
+      account: address as any
+    }).then(setGas)
+  }, [power]);
 
   const remainingToMint = globalState
     ? Number((globalState?.cap || 0n) / ethersInWei)
@@ -152,7 +172,8 @@ const NetworkPage = ({}: any) => {
     abi: contractABI,
     chainId: chain?.id,
     functionName: 'mint',
-    args: [power]
+    args: [power],
+    gas: (gas * 110n) / 100n
   } as any);
 
   const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
