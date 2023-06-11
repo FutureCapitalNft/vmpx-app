@@ -9,22 +9,45 @@ import {
   Button
 } from "@mui/material";
 
-import {WalletContext} from "@/contexts/Wallet";
 import {useRouter} from "next/router";
 import {ThemeContext} from "@/contexts/Theme";
-const {publicRuntimeConfig: config} = getConfig();
+import {useAccount, useNetwork, useSwitchNetwork} from "wagmi";
+import networks from "@/config/networks";
+
+const {publicRuntimeConfig} = getConfig();
+const supportedNetworks = networks({ config: publicRuntimeConfig });
+
 
 const HomePage = ({}: any) => {
   const { isLarge } = useContext(ThemeContext);
-  const { requestNetwork } = useContext(WalletContext);
   const router = useRouter();
+  const { chain } = useNetwork();
+  const { address } = useAccount();
+
+  const { switchNetwork } = useSwitchNetwork({
+    onSuccess: (data) => {
+      const targetNetwork = Object.values(supportedNetworks)
+        .find(n => Number(n?.chainId) === chain?.id)
+      // console.log(data)
+      router.replace(`/${targetNetwork?.networkId}`)
+        .catch(_ => {
+          // Do nothing; should already be handled
+        });
+    }
+  })
 
   const onNetworkClick = (networkId: string) => () => {
-    requestNetwork(networkId)
-      .then(_ => router.replace(`/${networkId}`))
-      .catch(_ => {
-        // Do nothing; should already be handled
-      });
+    const targetNetwork = Object.values(supportedNetworks)
+      .find(n => n?.networkId === networkId)
+    if (Number(targetNetwork?.chainId) === Number(chain?.id)) {
+      router.replace(`/${targetNetwork?.networkId}`)
+        .catch(_ => {
+          // Do nothing; should already be handled
+        });
+    }
+    if (switchNetwork) {
+      switchNetwork(Number(targetNetwork?.chainId) || 1)
+    }
   }
 
   return (
@@ -54,11 +77,12 @@ const HomePage = ({}: any) => {
           </Typography>
             <Button
               size="large"
+              disabled={!address}
               color="success"
               variant="outlined"
               onClick={onNetworkClick('x1')}
               sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
-              Mint VMPX on X1
+              {!!address ? 'Mint VMPX on X1' : 'Please Connect Wallet'}
             </Button>
           {/*<Button
             size="large"
