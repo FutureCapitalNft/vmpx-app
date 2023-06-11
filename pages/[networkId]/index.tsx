@@ -3,7 +3,7 @@ import { isAddress } from '@ethersproject/address'
 import networks from "@/config/networks";
 import styles from "@/styles/Home.module.css";
 import Head from "next/head";
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {LoadingButton} from '@mui/lab';
 import {
   Box, Button,
@@ -33,6 +33,8 @@ import {
 } from "wagmi";
 import {NotificationsContext} from "@/contexts/Notifications";
 import {ConsentContext} from "@/contexts/Consent";
+import {debounce} from 'lodash';
+
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -143,13 +145,17 @@ const NetworkPage = ({}: any) => {
     : 0;
   const maxPossibleVMUs = Math.min(maxSafeVMUs, Math.floor(remainingToMint / batch));
 
-  const onPowerChange = (_: any, v: any) => {
+  const changeHandler = (_: any, v: any) => {
+    console.log('power', v)
     if (Number(v) > maxPossibleVMUs) {
       setPower(maxPossibleVMUs)
     } else {
       setPower(Number(v))
-    }
-  }
+    }  };
+
+  const debouncedChangeHandler = useMemo(
+    () => debounce(changeHandler, 500)
+    , []);
 
   const setMinPower = () => {
     setPower(Number(1))
@@ -311,7 +317,7 @@ const NetworkPage = ({}: any) => {
                   <StyledSlider
                       value={power}
                       disabled={chain?.unsupported}
-                      onChange={onPowerChange}
+                      onChange={debouncedChangeHandler}
                       valueLabelDisplay={chain?.unsupported ? "off" : "on"}
                       step={1}
                       min={1}
