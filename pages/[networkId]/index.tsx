@@ -11,9 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import {Web3Context} from "@/contexts/Web3";
 import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
-import {TVmpxGlobalState} from "@/contexts/types";
 import Link from "next/link";
 import {disclaimer} from "@/components/disclaimer";
 import styled from "@emotion/styled";
@@ -23,9 +21,22 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import {gentumFontClass, italianaFontClass} from "@/lib/fonts";
 import Image from 'next/image'
+import {VmpxContext} from "@/contexts/VMPX";
+import {TVmpx} from "@/contexts/VMPX/types";
+import {
+  useAccount,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  usePublicClient,
+  useWaitForTransaction
+} from "wagmi";
+import {NotificationsContext} from "@/contexts/Notifications";
+import {ConsentContext} from "@/contexts/Consent";
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
+const contractABI = config.vmpxABI;
 
 const StyledSlider = styled(Slider)(() => ({
   '& .MuiSlider-thumb': {
@@ -85,46 +96,59 @@ const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
   '&:hover': { backgroundColor: '#A41E14'}
 }))
 
+const ethersInWei = BigInt('1000000000000000000');
+
 const NetworkPage = ({}: any) => {
+  const {message} = useContext(NotificationsContext);
   const {networkId} = useContext(CurrentNetworkContext);
-  const {ready, initState, syncState, syncUser, mint, state} = useContext(Web3Context);
+  const { requestTermsAcceptance, termsAccepted } = useContext(ConsentContext);
+  const {chain} = useNetwork();
+  const {address} = useAccount();
+  const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
+  const publicClient = usePublicClient({ chainId: chain?.id });
   const [power, setPower] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [gas, setGas] = useState<bigint>(0n);
 
-  const hasVmpx = networkId
-    && supportedNetworks[networkId]?.contractAddress;
-
-  const maxSafeVMUs = networkId
-    && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256
-
-  const ethersInWei = BigInt('1000000000000000000');
+  const hasVmpx = !!(networkId && supportedNetworks[networkId]?.contractAddress);
 
   const vmpxIsActive = hasVmpx
     && typeof supportedNetworks[networkId].contractAddress === 'string'
     && isAddress(supportedNetworks[networkId].contractAddress?.toString() || '');
 
-  const globalState: TVmpxGlobalState = state.globalState[networkId as any];
+  // console.log(networkId, hasVmpx, vmpxIsActive)
+
+  const globalState: TVmpx = global[chain?.id as number];
   const batch = Number((globalState?.batch || 0n) / ethersInWei);
 
-  useEffect(() => {
-    // console.log('index', ready, networkId);
-    if (ready && networkId && vmpxIsActive) {
-      initState(networkId)
-        .then(_ => syncState(networkId))
-        .then(_ => syncUser(networkId))
-    }
-  }, [ready, networkId, vmpxIsActive]);
+  const maxSafeVMUs = networkId
+    && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256;
 
   useEffect(() => {
     // console.log('globalState', globalState);
   }, [globalState]);
 
-  const remainingToMint = Number((globalState?.cap || 0n) / ethersInWei) - Number(globalState?.totalSupply);
+  useEffect(() => {
+    publicClient.estimateContractGas({
+      address: supportedNetworks[networkId!]?.contractAddress as any,
+      abi: contractABI,
+      functionName: 'mint',
+      args: [power],
+      account: address as any
+    }).then(setGas)
+  }, [power, networkId, address]);
+
+  const remainingToMint = globalState
+    ? Number((globalState?.cap || 0n) / ethersInWei)
+    - Number((globalState?.totalSupply || 0n) / ethersInWei)
+    : 0;
   const maxPossibleVMUs = Math.min(maxSafeVMUs, Math.floor(remainingToMint / batch));
-  // console.log(maxSafeVMUs, maxPossibleVMUs);
 
   const onPowerChange = (_: any, v: any) => {
-    setPower(Number(v))
+    if (Number(v) > maxPossibleVMUs) {
+      setPower(maxPossibleVMUs)
+    } else {
+      setPower(Number(v))
+    }
   }
 
   const setMinPower = () => {
@@ -143,16 +167,59 @@ const NetworkPage = ({}: any) => {
     setPower(Number(maxPossibleVMUs))
   }
 
-  const doMint = async () => {
-    setLoading(true);
-    await mint(power);
-    await syncUser(networkId || undefined);
-    setLoading(false);
+  const { config: mintConfig } = usePrepareContractWrite({
+    address: supportedNetworks[networkId!]?.contractAddress,
+    abi: contractABI,
+    chainId: chain?.id,
+    functionName: 'mint',
+    args: [power],
+    gas: (gas * 110n) / 100n
+  } as any);
+
+  const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
+
+  const { isLoading: isMintWaiting } = useWaitForTransaction({
+    ...mintTx,
+    confirmations: 1,
+    onSuccess: () => {
+      message.info('VMPX Minted')
+      refetchUserBalance()
+        .then(() => refetchVmpx())
+    }
+  })
+
+  const loading = isMintLoading || isMintWaiting;
+
+  const requireTermsAccepted = async () => {
+    if (!termsAccepted) {
+      const res = await requestTermsAcceptance();
+      if (!res) throw new Error('Terms not accepted');
+    }
   }
 
-  const pctMinted = globalState?.cap
-    ? (Number(globalState?.totalSupply || 0) * 100 /
-      Number((globalState?.cap || 0n) / ethersInWei)).toFixed(1)
+  const doMint = async () => {
+    try {
+      if (config.requireTermsSigning) await requireTermsAccepted();
+      mint && await mint();
+    } catch (e: any) {
+      if (e.shortMessage) {
+        message.warning(e.shortMessage);
+      } else if (e.message) {
+        message.warning(e.message);
+      }
+    }
+  }
+
+  const pctMinted = globalState
+    ? Number(globalState?.totalSupply * 100n / globalState?.cap).toFixed(1)
+    : '-';
+
+  const minted = globalState
+    ? ((globalState?.totalSupply || 0n) / ethersInWei).toLocaleString()
+    : '-';
+
+  const maxSupply = globalState
+    ? ((globalState?.cap || 0n) / ethersInWei).toLocaleString()
     : '-';
 
   return (
@@ -203,7 +270,7 @@ const NetworkPage = ({}: any) => {
                 <StyledP
                     variant="body1"
                     className={gentumFontClass} >
-                  {((globalState?.cap || 0n) / ethersInWei).toLocaleString()}
+                  {maxSupply}
                 </StyledP>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: 'left' }}>
@@ -217,7 +284,7 @@ const NetworkPage = ({}: any) => {
                 <StyledP
                     variant="body1"
                     className={gentumFontClass} >
-                    ({pctMinted}%) {globalState?.totalSupply?.toLocaleString()}
+                  {!chain?.unsupported && `(${pctMinted}%)`} {minted}
                 </StyledP>
             </Grid>
               <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
@@ -229,17 +296,39 @@ const NetworkPage = ({}: any) => {
               </Grid>
             <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
                 <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-around' }}>
-                    <IconButton size="small" onClick={setMinPower}><FirstPageIcon /></IconButton>
-                    <IconButton size="small" onClick={decPower}><RemoveIcon /></IconButton>
+                    <IconButton
+                        size="small"
+                        disabled={chain?.unsupported}
+                        onClick={setMinPower}>
+                        <FirstPageIcon />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        disabled={chain?.unsupported}
+                        onClick={decPower}>
+                        <RemoveIcon />
+                    </IconButton>
                   <StyledSlider
                       value={power}
+                      disabled={chain?.unsupported}
                       onChange={onPowerChange}
-                      valueLabelDisplay="on"
+                      valueLabelDisplay={chain?.unsupported ? "off" : "on"}
                       step={1}
                       min={1}
-                      max={maxSafeVMUs} sx={{ mx: 2 }}/>
-                    <IconButton size="small" onClick={incPower}><AddIcon /></IconButton>
-                    <IconButton size="small" onClick={setMaxPower}><LastPageIcon /></IconButton>
+                      max={maxSafeVMUs}
+                      sx={{ mx: 2 }}/>
+                    <IconButton
+                        size="small"
+                        disabled={chain?.unsupported}
+                        onClick={incPower}>
+                        <AddIcon />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        disabled={chain?.unsupported}
+                        onClick={setMaxPower}>
+                        <LastPageIcon />
+                    </IconButton>
                 </Stack>
             </Grid>
             <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
@@ -247,12 +336,15 @@ const NetworkPage = ({}: any) => {
                 size="large"
                 color="error"
                 variant={loading ? "outlined" : "contained"}
+                disabled={!mint || chain?.unsupported}
                 disableElevation
                 loading={loading}
                 loadingPosition="end"
-                endIcon={<KeyboardArrowRightIcon/>}
+                endIcon={!chain?.unsupported ? <KeyboardArrowRightIcon/> : <></>}
                 onClick={doMint} >
-                {loading ? 'Minting' : `Mint ${(power * batch).toLocaleString()} VMPX`}
+                {chain?.unsupported && 'Unsupported network'}
+                {!chain?.unsupported && !loading && `Mint ${(power * batch).toLocaleString()} VMPX`}
+                {!chain?.unsupported && loading && 'Minting'}
               </StyledLoadingButton>
             </Grid>
           </Grid>

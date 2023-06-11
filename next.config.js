@@ -27,7 +27,7 @@ const contractInfo = (projects = {}) => {
 const nextConfig = {
   publicRuntimeConfig: {
     rpcBTestingRatio: process.env.RPC_B_TESTING_RATIO || 0.5,
-    // xenApiUrl: 'https://api.xen.network/v1',
+    xenApiUrl: 'https://api.xen.network/v1',
     alerts: {
       5: {}, // new alerts start with this number
     },
@@ -53,7 +53,6 @@ const nextConfig = {
     vmpxABI: require('./public/abi/VMPX.json').abi,
     waitForConfirmationsNumber: 1,
     defaultProvider: process.env.DEFAULT_PROVIDER || false,
-    // buyXenLink: process.env.BUY_XEN_LINK || 'https://coinmarketcap.com/currencies/xen-crypto/markets/',
     rpcPollingInterval: parseInt(process.env.RPC_POLLING_INTERVAL) || 30_000,
     walletConnectApiKey: process.env.NEXT_PUBLIC_WALLETCONNECT_KEY,
     walletConnectVersion: process.env.WALLETCONNECT_VERSION,

@@ -31,6 +31,7 @@ export const CurrentNetworkProvider = ({ children, networkId: currentNetworkId }
   }, [router.events])
 
   const onNetworkMismatch = (walletNetworkId: string) => {
+    /*
     const subPath = path
       .replace(networkId, '')
       .replace(/\//, '');
@@ -41,6 +42,8 @@ export const CurrentNetworkProvider = ({ children, networkId: currentNetworkId }
     } else {
       return Promise.resolve(networkId);
     }
+     */
+    return Promise.resolve(walletNetworkId);
   }
 
   return (
