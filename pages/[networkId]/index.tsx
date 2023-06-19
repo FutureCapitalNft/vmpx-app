@@ -28,7 +28,7 @@ import {
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
-  usePublicClient,
+  // usePublicClient,
   useWaitForTransaction
 } from "wagmi";
 import {NotificationsContext} from "@/contexts/Notifications";
@@ -107,7 +107,7 @@ const NetworkPage = ({}: any) => {
   const {chain} = useNetwork();
   const {address} = useAccount();
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
-  const publicClient = usePublicClient({ chainId: chain?.id });
+  // const publicClient = usePublicClient({ chainId: chain?.id });
   const [power, setPower] = useState(1);
   const [gas, setGas] = useState<bigint>(0n);
 
@@ -130,6 +130,8 @@ const NetworkPage = ({}: any) => {
   }, [globalState]);
 
   useEffect(() => {
+    /*
+    TODO: roll back to gas estimates once RPC issues are resolved
     publicClient.estimateContractGas({
       address: supportedNetworks[networkId!]?.contractAddress as any,
       abi: contractABI,
@@ -137,6 +139,8 @@ const NetworkPage = ({}: any) => {
       args: [power],
       account: address as any
     }).then(setGas)
+     */
+    setGas(BigInt(700 * batch * power + 90_000))
   }, [power, networkId, address]);
 
   const remainingToMint = globalState
@@ -153,9 +157,10 @@ const NetworkPage = ({}: any) => {
       setPower(Number(v))
     }  };
 
-  const debouncedChangeHandler = useMemo(
-    () => debounce(changeHandler, 500)
-    , []);
+  // const debouncedChangeHandler = useMemo(
+    // TODO: revert to 500 once the gas is requested from the network
+  //  () => debounce(changeHandler, 70)
+  //  , []);
 
   const setMinPower = () => {
     setPower(Number(1))
@@ -179,7 +184,7 @@ const NetworkPage = ({}: any) => {
     chainId: chain?.id,
     functionName: 'mint',
     args: [power],
-    gas: (gas * 110n) / 100n
+    gas: (gas * 108n) / 100n
   } as any);
 
   const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
@@ -317,7 +322,7 @@ const NetworkPage = ({}: any) => {
                   <StyledSlider
                       value={power}
                       disabled={chain?.unsupported}
-                      onChange={debouncedChangeHandler}
+                      onChange={changeHandler}
                       valueLabelDisplay={chain?.unsupported ? "off" : "on"}
                       step={1}
                       min={1}

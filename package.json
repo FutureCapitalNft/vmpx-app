@@ -1,7 +1,9 @@
 {
   "name": "vmpx-app",
-  "version": "0.1.0",
-  "private": true,
+  "author": "@lbelyaev",
+  "license": "MIT",
+  "version": "1.0.0",
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
