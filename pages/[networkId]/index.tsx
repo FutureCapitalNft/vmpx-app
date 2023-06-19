@@ -157,10 +157,10 @@ const NetworkPage = ({}: any) => {
       setPower(Number(v))
     }  };
 
-  const debouncedChangeHandler = useMemo(
+  // const debouncedChangeHandler = useMemo(
     // TODO: revert to 500 once the gas is requested from the network
-    () => debounce(changeHandler, 70)
-    , []);
+  //  () => debounce(changeHandler, 70)
+  //  , []);
 
   const setMinPower = () => {
     setPower(Number(1))
@@ -322,7 +322,7 @@ const NetworkPage = ({}: any) => {
                   <StyledSlider
                       value={power}
                       disabled={chain?.unsupported}
-                      onChange={debouncedChangeHandler}
+                      onChange={changeHandler}
                       valueLabelDisplay={chain?.unsupported ? "off" : "on"}
                       step={1}
                       min={1}
