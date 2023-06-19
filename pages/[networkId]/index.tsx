@@ -109,6 +109,7 @@ const NetworkPage = ({}: any) => {
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
   // const publicClient = usePublicClient({ chainId: chain?.id });
   const [power, setPower] = useState(1);
+  const [committedPower, setCommittedPower] = useState(1);
   const [gas, setGas] = useState<bigint>(0n);
 
   const hasVmpx = !!(networkId && supportedNetworks[networkId]?.contractAddress);
@@ -140,8 +141,8 @@ const NetworkPage = ({}: any) => {
       account: address as any
     }).then(setGas)
      */
-    setGas(BigInt(700 * batch * power + 90_000))
-  }, [power, networkId, address]);
+    setGas(BigInt(700 * batch * committedPower + 90_000))
+  }, [committedPower, networkId, address]);
 
   const remainingToMint = globalState
     ? Number((globalState?.cap || 0n) / ethersInWei)
@@ -152,30 +153,45 @@ const NetworkPage = ({}: any) => {
   const changeHandler = (_: any, v: any) => {
     console.log('power', v)
     if (Number(v) > maxPossibleVMUs) {
-      setPower(maxPossibleVMUs)
+      setPower(maxPossibleVMUs);
     } else {
-      setPower(Number(v))
-    }  };
+      setPower(Number(v));
+    }
+  };
+
+  const committedHandler = (_: any, v: any) => {
+    console.log('committed', v)
+    if (Number(v) > maxPossibleVMUs) {
+      setCommittedPower(maxPossibleVMUs);
+    } else {
+      setCommittedPower(Number(v));
+    }
+  };
+
 
   // const debouncedChangeHandler = useMemo(
     // TODO: revert to 500 once the gas is requested from the network
-  //  () => debounce(changeHandler, 70)
+  //  () => debounce(changeHandler, 10)
   //  , []);
 
   const setMinPower = () => {
     setPower(Number(1))
+    setCommittedPower(Number(1))
   }
 
   const decPower = () => {
     setPower(p => Math.max(p - 1, 1))
+    setCommittedPower(p => Math.max(p - 1, 1))
   }
 
   const incPower = () => {
     setPower(p => Math.min(p + 1, maxPossibleVMUs))
+    setCommittedPower(p => Math.min(p + 1, maxPossibleVMUs))
   }
 
   const setMaxPower = () => {
     setPower(Number(maxPossibleVMUs))
+    setCommittedPower(Number(maxPossibleVMUs))
   }
 
   const { config: mintConfig } = usePrepareContractWrite({
@@ -183,8 +199,9 @@ const NetworkPage = ({}: any) => {
     abi: contractABI,
     chainId: chain?.id,
     functionName: 'mint',
-    args: [power],
-    gas: (gas * 108n) / 100n
+    args: [committedPower],
+    gas: (gas * 108n) / 100n,
+    // cacheTime: 1_000
   } as any);
 
   const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
@@ -323,8 +340,10 @@ const NetworkPage = ({}: any) => {
                       value={power}
                       disabled={chain?.unsupported}
                       onChange={changeHandler}
+                      onChangeCommitted={committedHandler}
                       valueLabelDisplay={chain?.unsupported ? "off" : "on"}
                       step={1}
+                      marks
                       min={1}
                       max={maxSafeVMUs}
                       sx={{ mx: 2 }}/>
