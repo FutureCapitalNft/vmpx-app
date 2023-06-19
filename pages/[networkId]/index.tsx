@@ -130,6 +130,8 @@ const NetworkPage = ({}: any) => {
   }, [globalState]);
 
   useEffect(() => {
+    /*
+    TODO: roll back to gas estimates once RPC issues are resolved
     publicClient.estimateContractGas({
       address: supportedNetworks[networkId!]?.contractAddress as any,
       abi: contractABI,
@@ -137,6 +139,8 @@ const NetworkPage = ({}: any) => {
       args: [power],
       account: address as any
     }).then(setGas)
+     */
+    setGas(BigInt(700 * batch * power + 90_000))
   }, [power, networkId, address]);
 
   const remainingToMint = globalState
