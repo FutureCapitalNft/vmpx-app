@@ -183,7 +183,7 @@ const NetworkPage = ({}: any) => {
     chainId: chain?.id,
     functionName: 'mint',
     args: [power],
-    gas: (gas * 110n) / 100n
+    gas: (gas * 105n) / 100n
   } as any);
 
   const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
