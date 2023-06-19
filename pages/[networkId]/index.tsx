@@ -158,7 +158,8 @@ const NetworkPage = ({}: any) => {
     }  };
 
   const debouncedChangeHandler = useMemo(
-    () => debounce(changeHandler, 500)
+    // TODO: revert to 500 once the gas is requested from the network
+    () => debounce(changeHandler, 70)
     , []);
 
   const setMinPower = () => {
