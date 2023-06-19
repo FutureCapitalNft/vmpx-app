@@ -152,15 +152,16 @@ const NetworkPage = ({}: any) => {
   const changeHandler = (_: any, v: any) => {
     console.log('power', v)
     if (Number(v) > maxPossibleVMUs) {
-      setPower(maxPossibleVMUs)
+      setPower(maxPossibleVMUs);
     } else {
-      setPower(Number(v))
-    }  };
+      setPower(Number(v));
+    }
+  };
 
-  // const debouncedChangeHandler = useMemo(
+  const debouncedChangeHandler = useMemo(
     // TODO: revert to 500 once the gas is requested from the network
-  //  () => debounce(changeHandler, 70)
-  //  , []);
+    () => debounce(changeHandler, 10)
+    , []);
 
   const setMinPower = () => {
     setPower(Number(1))
@@ -184,7 +185,8 @@ const NetworkPage = ({}: any) => {
     chainId: chain?.id,
     functionName: 'mint',
     args: [power],
-    gas: (gas * 108n) / 100n
+    gas: (gas * 108n) / 100n,
+    cacheTime: 1_000
   } as any);
 
   const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
@@ -322,7 +324,7 @@ const NetworkPage = ({}: any) => {
                   <StyledSlider
                       value={power}
                       disabled={chain?.unsupported}
-                      onChange={changeHandler}
+                      onChange={debouncedChangeHandler}
                       valueLabelDisplay={chain?.unsupported ? "off" : "on"}
                       step={1}
                       marks
