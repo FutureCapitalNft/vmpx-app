@@ -28,7 +28,7 @@ import {
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
-  usePublicClient,
+  // usePublicClient,
   useWaitForTransaction
 } from "wagmi";
 import {NotificationsContext} from "@/contexts/Notifications";
@@ -107,7 +107,7 @@ const NetworkPage = ({}: any) => {
   const {chain} = useNetwork();
   const {address} = useAccount();
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
-  const publicClient = usePublicClient({ chainId: chain?.id });
+  // const publicClient = usePublicClient({ chainId: chain?.id });
   const [power, setPower] = useState(1);
   const [gas, setGas] = useState<bigint>(0n);
 
