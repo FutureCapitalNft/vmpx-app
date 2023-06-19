@@ -325,6 +325,7 @@ const NetworkPage = ({}: any) => {
                       onChange={changeHandler}
                       valueLabelDisplay={chain?.unsupported ? "off" : "on"}
                       step={1}
+                      marks
                       min={1}
                       max={maxSafeVMUs}
                       sx={{ mx: 2 }}/>
