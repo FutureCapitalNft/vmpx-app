@@ -141,8 +141,8 @@ const NetworkPage = ({}: any) => {
       account: address as any
     }).then(setGas)
      */
-    setGas(BigInt(700 * batch * committedPower + 90_000))
-  }, [committedPower, networkId, address]);
+    setGas(BigInt(700 * batch * committedPower + 90_000));
+  }, [committedPower, batch, networkId, address]);
 
   const remainingToMint = globalState
     ? Number((globalState?.cap || 0n) / ethersInWei)
@@ -167,12 +167,6 @@ const NetworkPage = ({}: any) => {
       setCommittedPower(Number(v));
     }
   };
-
-
-  // const debouncedChangeHandler = useMemo(
-    // TODO: revert to 500 once the gas is requested from the network
-  //  () => debounce(changeHandler, 10)
-  //  , []);
 
   const setMinPower = () => {
     setPower(Number(1))
