@@ -3,7 +3,7 @@ import { isAddress } from '@ethersproject/address'
 import networks from "@/config/networks";
 import styles from "@/styles/Home.module.css";
 import Head from "next/head";
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {LoadingButton} from '@mui/lab';
 import {
   Box, Button,
@@ -33,8 +33,7 @@ import {
 } from "wagmi";
 import {NotificationsContext} from "@/contexts/Notifications";
 import {ConsentContext} from "@/contexts/Consent";
-import {debounce} from 'lodash';
-
+// import {debounce} from 'lodash';
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -118,17 +117,13 @@ const NetworkPage = ({}: any) => {
     && typeof supportedNetworks[networkId].contractAddress === 'string'
     && isAddress(supportedNetworks[networkId].contractAddress?.toString() || '');
 
-  // console.log(networkId, hasVmpx, vmpxIsActive)
-
   const globalState: TVmpx = global[chain?.id as number];
   const batch = Number((globalState?.batch || 0n) / ethersInWei);
 
   const maxSafeVMUs = networkId
     && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256;
 
-  useEffect(() => {
-    // console.log('globalState', globalState);
-  }, [globalState]);
+  const mintingIsOver = globalState?.totalSupply === globalState?.cap;
 
   useEffect(() => {
     /*
@@ -151,7 +146,6 @@ const NetworkPage = ({}: any) => {
   const maxPossibleVMUs = Math.min(maxSafeVMUs, Math.floor(remainingToMint / batch));
 
   const changeHandler = (_: any, v: any) => {
-    console.log('power', v)
     if (Number(v) > maxPossibleVMUs) {
       setPower(maxPossibleVMUs);
     } else {
@@ -160,7 +154,6 @@ const NetworkPage = ({}: any) => {
   };
 
   const committedHandler = (_: any, v: any) => {
-    console.log('committed', v)
     if (Number(v) > maxPossibleVMUs) {
       setCommittedPower(maxPossibleVMUs);
     } else {
@@ -309,14 +302,14 @@ const NetworkPage = ({}: any) => {
                   {!chain?.unsupported && `(${pctMinted}%)`} {minted}
                 </StyledP>
             </Grid>
-              <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
+            {!mintingIsOver && <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
                   <StyledP
                       variant="body1"
                       className={gentumFontClass} >
                       Power
                   </StyledP>
-              </Grid>
-            <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
+              </Grid>}
+            {!mintingIsOver && <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
                 <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-around' }}>
                     <IconButton
                         size="small"
@@ -354,8 +347,8 @@ const NetworkPage = ({}: any) => {
                         <LastPageIcon />
                     </IconButton>
                 </Stack>
-            </Grid>
-            <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
+            </Grid>}
+            {!mintingIsOver && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
               <StyledLoadingButton
                 size="large"
                 color="error"
@@ -370,7 +363,10 @@ const NetworkPage = ({}: any) => {
                 {!chain?.unsupported && !loading && `Mint ${(power * batch).toLocaleString()} VMPX`}
                 {!chain?.unsupported && loading && 'Minting'}
               </StyledLoadingButton>
-            </Grid>
+            </Grid>}
+            {mintingIsOver && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
+                <StyledSubH variant="h4" >Minting Is Over</StyledSubH>
+            </Grid>}
           </Grid>
             <StyledDisclaimer
                 variant="body2" >
