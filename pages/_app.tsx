@@ -1,5 +1,4 @@
 import "../styles/circles.scss";
-// import '../styles/fonts/stylesheet.css';
 import '@rainbow-me/rainbowkit/styles.css';
 
 import debug from 'debug';
@@ -47,7 +46,6 @@ const getRPCs = (chain: any) => ({
 const { publicClient, webSocketPublicClient } = configureChains(
   chains,
   [
-    // w3mProvider({ projectId }),
     infuraProvider({
       apiKey: publicRuntimeConfig.infuraId
     }),
@@ -59,7 +57,6 @@ const { publicClient, webSocketPublicClient } = configureChains(
 const wagmiConfig = createConfig({
   autoConnect: true,
   persister: null,
-  // connectors: w3mConnectors({ projectId, version: 1, chains }),
   connectors,
   publicClient,
   webSocketPublicClient
