@@ -2,6 +2,7 @@
 export type TVmpx = {
   cap: bigint,
   cycles: bigint,
+  startBlockNumber: bigint,
   counter: bigint,
   batch: bigint,
   totalSupply: bigint,

@@ -38,6 +38,7 @@ export const VmpxProvider = ({ children }: any) => {
       { ...vmpxContract(chain), functionName: 'counter', chainId: chain?.id },
       { ...vmpxContract(chain), functionName: 'BATCH', chainId: chain?.id },
       { ...vmpxContract(chain), functionName: 'totalSupply', chainId: chain?.id },
+      { ...vmpxContract(chain), functionName: 'startBlockNumber', chainId: chain?.id },
     ],
     onSuccess: (init) => {
       // console.log('init', chain?.id, init)
@@ -47,6 +48,7 @@ export const VmpxProvider = ({ children }: any) => {
         { result: counter },
         { result: batch },
         { result: totalSupply },
+        { result: startBlockNumber },
       ] = init;
       setGlobal((g) => ({
         ...g,
@@ -57,6 +59,7 @@ export const VmpxProvider = ({ children }: any) => {
           counter,
           batch,
           totalSupply,
+          startBlockNumber,
         } as any
       }))
     }
