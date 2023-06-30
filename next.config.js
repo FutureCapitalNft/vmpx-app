@@ -65,7 +65,7 @@ const nextConfig = {
     rpcUrl: process.env.RPC_URL,
     xenVersion: process.env.XEN_VERSION || '1',
     deployedUrl: process.env.NEXT_PUBLIC_VERCEL_URL || 'https://getvmpx.com',
-    isTestnet: process.env.IS_TESTNET,
+      isTestnet: Number(process.env.IS_TESTNET || '1'),
     supportedChains: (process.env.SUPPORTED_CHAINS || '')
         .split(',').filter(_ => !!_),
     wsUrlOverrides: (process.env.SUPPORTED_CHAINS || '')

@@ -132,7 +132,7 @@ const NetworkPage = ({}: any) => {
   const maxSafeVMUs = networkId
     && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256;
 
-  const mintingHasStarted = globalState?.startBlockNumber < (blockNumber || globalState?.startBlockNumber);
+  const mintingHasStarted = (globalState?.startBlockNumber || 0n) < (blockNumber || globalState?.startBlockNumber || 0n);
   const blocksToStart = (globalState?.startBlockNumber || 0n) - (blockNumber || globalState?.startBlockNumber || 0n);
   const mintingIsOver = globalState?.totalSupply === globalState?.cap;
 
@@ -192,15 +192,21 @@ const NetworkPage = ({}: any) => {
     setCommittedPower(Number(maxPossibleVMUs))
   }
 
-  const { config: mintConfig } = usePrepareContractWrite({
-    address: supportedNetworks[networkId!]?.contractAddress,
+  const { config: mintConfig, refetch } = usePrepareContractWrite({
+    address: supportedNetworks[networkId!]?.contractAddress as `0x${string}`,
     abi: contractABI,
     chainId: chain?.id,
     functionName: 'mint',
     args: [committedPower],
     gas: (gas * 108n) / 100n,
     // cacheTime: 1_000
-  } as any);
+  });
+
+  useEffect(() => {
+    if (globalState?.startBlockNumber > 0n && blocksToStart === 0n) {
+      refetch().then(console.log)
+    }
+  }, [blocksToStart, globalState?.startBlockNumber])
 
   const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
 

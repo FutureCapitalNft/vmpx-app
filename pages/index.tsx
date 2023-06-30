@@ -6,17 +6,16 @@ import {
   Box,
   Container,
   Typography,
-  Button
+  Button, Stack
 } from "@mui/material";
 
 import {useRouter} from "next/router";
 import {ThemeContext} from "@/contexts/Theme";
 import {useAccount, useNetwork, useSwitchNetwork} from "wagmi";
-import networks from "@/config/networks";
+import networks, {TNetworkConfig} from "@/config/networks";
 
 const {publicRuntimeConfig} = getConfig();
 const supportedNetworks = networks({ config: publicRuntimeConfig });
-
 
 const HomePage = ({}: any) => {
   const { isLarge } = useContext(ThemeContext);
@@ -75,23 +74,26 @@ const HomePage = ({}: any) => {
             Thirsty...? 🧛 Welcome to VMPX World!<br/>
             Hurry, mint yourself some, while it lasts...
           </Typography>
-            <Button
-              size="large"
-              disabled={!address}
-              color="success"
-              variant="outlined"
-              onClick={onNetworkClick('x1')}
-              sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
-              {!!address ? 'Mint VMPX on X1' : 'Please Connect Wallet'}
-            </Button>
-          {/*<Button
-            size="large"
-            color="success"
-            variant="outlined"
-            onClick={onNetworkClick('goerli')}
-            sx={{ borderRadius: 25, mt: 4 , width: 250, height: 60, textTransform: 'unset', fontWeight: 'bold' }} >
-            Mint VMPX on Goerli
-          </Button>*/}
+          {!!address && <Stack
+            direction="column"
+            sx={{ justifyContent: 'center' }} >
+            {Object.values(supportedNetworks)
+              .map((network: TNetworkConfig) => (<Button
+                key={network.networkId}
+                size="large"
+                disabled={!address}
+                color="success"
+                variant="outlined"
+                onClick={onNetworkClick(network?.networkId)}
+                sx={{ borderRadius: 25, width: 300, height: 60, textTransform: 'unset', fontWeight: 'bold', margin: '1rem auto' }} >
+              {'Mint VMPX on ' + network.name}
+            </Button>))}
+          </Stack>}
+          {!address && <Box sx={{ mt: 5 }}>
+              <Typography >
+                Please Connect Wallet
+              </Typography>
+          </Box>}
         </Container>
       </Box>
     </div>
