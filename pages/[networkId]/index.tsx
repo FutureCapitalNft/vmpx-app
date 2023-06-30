@@ -266,7 +266,10 @@ const NetworkPage = ({}: any) => {
       </Head>
       <div id="live-gradient" className={styles.liveGradient} >
       <Box>
-        {!vmpxIsActive && <Container sx={{textAlign: 'center' }}>
+        {!address && <Box sx={{ py: 2, mt: 2 }}>
+            <StyledCountdown >Please Connect Wallet</StyledCountdown>
+        </Box>}
+        {address && !vmpxIsActive && <Container sx={{textAlign: 'center' }}>
             <StyledH
                 variant="h3"
                 className={italianaFontClass}>
@@ -282,7 +285,7 @@ const NetworkPage = ({}: any) => {
               </Button>
             </Link>
         </Container>}
-        {vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
+        {address && vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
           <Image
               width={245}
               height={71}
@@ -321,14 +324,14 @@ const NetworkPage = ({}: any) => {
                   {!chain?.unsupported && `(${pctMinted}%)`} {minted}
                 </StyledP>
             </Grid>
-            {!mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
+            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
                   <StyledP
                       variant="body1"
                       className={gentumFontClass} >
                       Power
                   </StyledP>
               </Grid>}
-            {!mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
+            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
                 <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-around' }}>
                     <IconButton
                         size="small"
@@ -367,7 +370,7 @@ const NetworkPage = ({}: any) => {
                     </IconButton>
                 </Stack>
             </Grid>}
-            {!mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
+            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
               <StyledLoadingButton
                 size="large"
                 color="error"
@@ -383,10 +386,10 @@ const NetworkPage = ({}: any) => {
                 {!chain?.unsupported && loading && 'Minting'}
               </StyledLoadingButton>
             </Grid>}
-            {mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
+            {address && mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
                 <StyledSubH variant="h4" >Minting Is Over</StyledSubH>
             </Grid>}
-            {!mintingHasStarted && <Container sx={{textAlign: 'center', padding: 3 }}>
+            {address && !mintingHasStarted && <Container sx={{textAlign: 'center', padding: 3 }}>
                 <StyledCountdown>Minting starts in </StyledCountdown>
                 <Countdown
                     key={`cd-mint-${blockNumber}`}
