@@ -136,6 +136,8 @@ const NetworkPage = ({}: any) => {
   const blocksToStart = (globalState?.startBlockNumber || 0n) - (blockNumber || globalState?.startBlockNumber || 0n);
   const mintingIsOver = globalState?.totalSupply === globalState?.cap;
 
+  const blockTime = supportedNetworks[networkId || '']?.blockTimeMs || 12_000;
+
   useEffect(() => {
     /*
     TODO: roll back to gas estimates once RPC issues are resolved
@@ -391,7 +393,7 @@ const NetworkPage = ({}: any) => {
                     className="countdown-text"
                     daysInHours
                     zeroPadTime={2}
-                    date={new Date(Date.now() + Number(blocksToStart) * 5_000)}
+                    date={new Date(Date.now() + Number(blocksToStart) * blockTime)}
                 />
             </Container>}
           </Grid>
