@@ -149,7 +149,7 @@ const NetworkPage = ({}: any) => {
       account: address as any
     }).then(setGas)
      */
-    setGas(BigInt(700 * batch * committedPower + 90_000));
+    setGas(BigInt(700 * 200 * committedPower + 90_000));
   }, [committedPower, batch, networkId, address]);
 
   const remainingToMint = globalState
@@ -201,6 +201,7 @@ const NetworkPage = ({}: any) => {
     functionName: 'mint',
     args: [committedPower],
     gas: (gas * 108n) / 100n,
+    enabled: mintingHasStarted && !mintingIsOver && committedPower > 0n
     // cacheTime: 1_000
   });
 
