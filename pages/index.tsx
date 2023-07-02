@@ -269,7 +269,7 @@ const NetworkPage = ({}: any) => {
       <div id="live-gradient" className={styles.liveGradient} >
       <Box>
         {!address && <Box sx={{ py: 2, mt: 2 }}>
-            <StyledCountdown >Please Connect Wallet</StyledCountdown>
+            <StyledCountdown sx={{ textAlign: 'center' }}>Please Connect Wallet</StyledCountdown>
         </Box>}
         {address && !vmpxIsActive && <Container sx={{textAlign: 'center' }}>
             <StyledH
