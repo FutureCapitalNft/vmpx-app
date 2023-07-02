@@ -18,7 +18,7 @@ import {configureChains, createConfig, WagmiConfig} from 'wagmi'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { infuraProvider } from "wagmi/providers/infura";
 import {VmpxProvider} from "@/contexts/VMPX";
-import {x1Devnet} from "@/config/chains/x1Devnet";
+import { supportedChains } from "@/config/chains";
 
 const { publicRuntimeConfig } = getConfig();
 debug.enable(publicRuntimeConfig.debug);
@@ -26,10 +26,7 @@ const supportedNetworks = networks({ config: publicRuntimeConfig });
 
 const chainById = (id: number) => Object.values(supportedNetworks).find(n => Number(n.chainId) === id);
 
-const chains = [
-  // mainnet,
-  x1Devnet
-];
+const chains = supportedChains;
 const projectId = publicRuntimeConfig?.walletConnectApiKey;
 
 const { connectors } = getDefaultWallets({

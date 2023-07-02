@@ -22,6 +22,7 @@ export type TNetworkConfig = {
   contractAddress: string | number | null;
   vmpxMessage?: string | null;
   maxSafeVMUs?: string;
+  blockTimeMs?: number;
 }
 
 const addresses = (config: NextConfig, networkId: string) => ({
@@ -46,12 +47,13 @@ const networkConfigs = ({config}: any): Record<string, TNetworkConfig> => ({
     logoUrl: '/logos/ethereum-logo.png',
     vmpxMessage: config.xenftMessage['mainnet'],
     maxSafeVMUs: config.maxSafeVMUs['mainnet'],
+    blockTimeMs: 12_000,
     ...addresses(config, 'mainnet'),
   },
 
   // TESTNETS
   goerli: {
-    isTestnet: false,
+    isTestnet: true,
     gasLimit: 30_000_000,
     chainId: '0x5',
     networkId: 'goerli',
@@ -65,12 +67,13 @@ const networkConfigs = ({config}: any): Record<string, TNetworkConfig> => ({
     logoUrl: '/logos/ethereum-logo.png',
     vmpxMessage: config.xenftMessage['goerli'],
     maxSafeVMUs: config.maxSafeVMUs['goerli'],
+    blockTimeMs: 12_000,
     ...addresses(config, 'goerli'),
   },
 
   // devnet
   x1: {
-    isTestnet: false,
+    isTestnet: true,
     gasLimit: 30_000_000,
     chainId: '0x315e4',
     networkId: 'x1',
@@ -84,6 +87,7 @@ const networkConfigs = ({config}: any): Record<string, TNetworkConfig> => ({
     logoUrl: '/XEN-logo-square-light 512x512.png',
     vmpxMessage: config.xenftMessage['x1'],
     maxSafeVMUs: config.maxSafeVMUs['x1'],
+    blockTimeMs: 5_000,
     ...addresses(config, 'x1'),
   },
 })

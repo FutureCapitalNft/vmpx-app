@@ -13,6 +13,7 @@ import {
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 import Link from "next/link";
+import Countdown from 'react-countdown';
 import {disclaimer} from "@/components/disclaimer";
 import styled from "@emotion/styled";
 import AddIcon from '@mui/icons-material/Add';
@@ -24,7 +25,7 @@ import Image from 'next/image'
 import {VmpxContext} from "@/contexts/VMPX";
 import {TVmpx} from "@/contexts/VMPX/types";
 import {
-  useAccount,
+  useAccount, useBlockNumber,
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
@@ -76,6 +77,13 @@ const StyledSubH = styled(Typography)(({ theme }: any) => ({
   marginBottom: 24,
 }))
 
+const StyledCountdown = styled(Typography)(({ theme }: any) => ({
+  maxWidth: '900px',
+  margin: 'auto',
+  fontFamily: 'Gentium Plus',
+  color: theme.palette?.grey?.[theme.palette?.mode === 'dark' ? 400 : 700],
+}))
+
 const StyledDisclaimer = styled(Typography)(({ theme }: any) => ({
   maxWidth: '900px',
   margin: 'auto',
@@ -105,6 +113,7 @@ const NetworkPage = ({}: any) => {
   const { requestTermsAcceptance, termsAccepted } = useContext(ConsentContext);
   const {chain} = useNetwork();
   const {address} = useAccount();
+  const { data: blockNumber } = useBlockNumber({ chainId: chain?.id, watch: true })
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
   // const publicClient = usePublicClient({ chainId: chain?.id });
   const [power, setPower] = useState(1);
@@ -123,7 +132,11 @@ const NetworkPage = ({}: any) => {
   const maxSafeVMUs = networkId
     && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256;
 
+  const mintingHasStarted = (globalState?.startBlockNumber || 0n) < (blockNumber || globalState?.startBlockNumber || 0n);
+  const blocksToStart = (globalState?.startBlockNumber || 0n) - (blockNumber || globalState?.startBlockNumber || 0n);
   const mintingIsOver = globalState?.totalSupply === globalState?.cap;
+
+  const blockTime = supportedNetworks[networkId || '']?.blockTimeMs || 12_000;
 
   useEffect(() => {
     /*
@@ -136,7 +149,7 @@ const NetworkPage = ({}: any) => {
       account: address as any
     }).then(setGas)
      */
-    setGas(BigInt(700 * batch * committedPower + 90_000));
+    setGas(BigInt(700 * 200 * committedPower + 90_000));
   }, [committedPower, batch, networkId, address]);
 
   const remainingToMint = globalState
@@ -181,15 +194,22 @@ const NetworkPage = ({}: any) => {
     setCommittedPower(Number(maxPossibleVMUs))
   }
 
-  const { config: mintConfig } = usePrepareContractWrite({
-    address: supportedNetworks[networkId!]?.contractAddress,
+  const { config: mintConfig, refetch } = usePrepareContractWrite({
+    address: supportedNetworks[networkId!]?.contractAddress as `0x${string}`,
     abi: contractABI,
     chainId: chain?.id,
     functionName: 'mint',
     args: [committedPower],
     gas: (gas * 108n) / 100n,
+    enabled: mintingHasStarted && !mintingIsOver && committedPower > 0n
     // cacheTime: 1_000
-  } as any);
+  });
+
+  useEffect(() => {
+    if (globalState?.startBlockNumber > 0n && blocksToStart === 0n) {
+      refetch().then(console.log)
+    }
+  }, [blocksToStart, globalState?.startBlockNumber])
 
   const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
 
@@ -247,7 +267,10 @@ const NetworkPage = ({}: any) => {
       </Head>
       <div id="live-gradient" className={styles.liveGradient} >
       <Box>
-        {!vmpxIsActive && <Container sx={{textAlign: 'center' }}>
+        {!address && <Box sx={{ py: 2, mt: 2 }}>
+            <StyledCountdown >Please Connect Wallet</StyledCountdown>
+        </Box>}
+        {address && !vmpxIsActive && <Container sx={{textAlign: 'center' }}>
             <StyledH
                 variant="h3"
                 className={italianaFontClass}>
@@ -263,7 +286,7 @@ const NetworkPage = ({}: any) => {
               </Button>
             </Link>
         </Container>}
-        {vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
+        {address && vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
           <Image
               width={245}
               height={71}
@@ -302,14 +325,14 @@ const NetworkPage = ({}: any) => {
                   {!chain?.unsupported && `(${pctMinted}%)`} {minted}
                 </StyledP>
             </Grid>
-            {!mintingIsOver && <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
+            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
                   <StyledP
                       variant="body1"
                       className={gentumFontClass} >
                       Power
                   </StyledP>
               </Grid>}
-            {!mintingIsOver && <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
+            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ textAlign: 'left', mt: 4 }}>
                 <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-around' }}>
                     <IconButton
                         size="small"
@@ -348,7 +371,7 @@ const NetworkPage = ({}: any) => {
                     </IconButton>
                 </Stack>
             </Grid>}
-            {!mintingIsOver && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
+            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
               <StyledLoadingButton
                 size="large"
                 color="error"
@@ -364,9 +387,19 @@ const NetworkPage = ({}: any) => {
                 {!chain?.unsupported && loading && 'Minting'}
               </StyledLoadingButton>
             </Grid>}
-            {mintingIsOver && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
+            {address && mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
                 <StyledSubH variant="h4" >Minting Is Over</StyledSubH>
             </Grid>}
+            {address && !mintingHasStarted && <Container sx={{textAlign: 'center', padding: 3 }}>
+                <StyledCountdown>Minting starts in </StyledCountdown>
+                <Countdown
+                    key={`cd-mint-${blockNumber}`}
+                    className="countdown-text"
+                    daysInHours
+                    zeroPadTime={2}
+                    date={new Date(Date.now() + Number(blocksToStart) * blockTime)}
+                />
+            </Container>}
           </Grid>
             <StyledDisclaimer
                 variant="body2" >
