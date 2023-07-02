@@ -55,7 +55,7 @@ const Footer = ({ contractAddress: mainAddress, projectId = 'vmpx' }
     ? `VMPX: ${((maybeContractAddress || '').toString() || '-').slice(0, 12)}`
     : `${project.name}: ${((maybeContractAddress || '').toString() || '-').slice(0, 12)}`;
 
-  const isHomePage = !networkId;
+  const isHomePage = false; // !networkId;
 
   return (
     <footer className={styles.footer}>

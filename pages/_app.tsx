@@ -73,7 +73,7 @@ const DynamicLayout = ({ Component, pageProps, networkId }: any) => {
   } else {
     return (
       <Layout projectId="vmpx"
-              contractAddress={supportedNetworks?.[networkId]?.contractAddress}>
+              contractAddress={supportedNetworks?.[networkId || 'mainnet']?.contractAddress}>
           <Component {...pageProps} networkId={networkId} />
       </Layout>
     )
