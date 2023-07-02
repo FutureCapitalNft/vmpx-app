@@ -10,9 +10,9 @@ const chains = [
   // mainnets
   mainnet,
   // testnets
-  goerli,
+  // goerli,
   // devnets
-  x1Devnet,
+  // x1Devnet,
   // x1Fastnet
 ];
 
