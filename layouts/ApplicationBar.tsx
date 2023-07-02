@@ -15,7 +15,7 @@ import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 import networks from "@/config/networks";
 import {watchNetwork} from "@wagmi/core";
 import {VmpxContext} from "@/contexts/VMPX";
-import {useAccount, useNetwork} from "wagmi";
+import {useAccount, useConnect, useNetwork} from "wagmi";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
 import {NotificationsContext} from "@/contexts/Notifications";
 

@@ -103,7 +103,7 @@ function VmpxApp({ Component, pageProps, networkId }: any) {
 }
 
 VmpxApp.getInitialProps = async (context: any) => {
-  const {networkId} = context.router.query;
+  const {networkId = 'mainnet' } = context.router.query;
   return { networkId }
 }
 
