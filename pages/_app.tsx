@@ -1,5 +1,4 @@
 import "../styles/circles.scss";
-// import '../styles/fonts/stylesheet.css';
 import '@rainbow-me/rainbowkit/styles.css';
 
 import debug from 'debug';
@@ -19,7 +18,7 @@ import {configureChains, createConfig, WagmiConfig} from 'wagmi'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { infuraProvider } from "wagmi/providers/infura";
 import {VmpxProvider} from "@/contexts/VMPX";
-import {x1Devnet} from "@/config/chains/x1Devnet";
+import { supportedChains } from "@/config/chains";
 
 const { publicRuntimeConfig } = getConfig();
 debug.enable(publicRuntimeConfig.debug);
@@ -27,10 +26,7 @@ const supportedNetworks = networks({ config: publicRuntimeConfig });
 
 const chainById = (id: number) => Object.values(supportedNetworks).find(n => Number(n.chainId) === id);
 
-const chains = [
-  // mainnet,
-  x1Devnet
-];
+const chains = supportedChains;
 const projectId = publicRuntimeConfig?.walletConnectApiKey;
 
 const { connectors } = getDefaultWallets({
@@ -47,7 +43,6 @@ const getRPCs = (chain: any) => ({
 const { publicClient, webSocketPublicClient } = configureChains(
   chains,
   [
-    // w3mProvider({ projectId }),
     infuraProvider({
       apiKey: publicRuntimeConfig.infuraId
     }),
@@ -59,7 +54,6 @@ const { publicClient, webSocketPublicClient } = configureChains(
 const wagmiConfig = createConfig({
   autoConnect: true,
   persister: null,
-  // connectors: w3mConnectors({ projectId, version: 1, chains }),
   connectors,
   publicClient,
   webSocketPublicClient

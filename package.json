@@ -1,7 +1,9 @@
 {
   "name": "vmpx-app",
-  "version": "0.1.0",
-  "private": true,
+  "author": "@lbelyaev",
+  "license": "MIT",
+  "version": "1.0.0",
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,18 +17,20 @@
     "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.130",
     "@mui/material": "^5.10.14",
-    "@rainbow-me/rainbowkit": "^1.0.1",
+    "@rainbow-me/rainbowkit": "^1.0.4",
     "debug": "^4.3.4",
+    "lodash": "^4.17.21",
     "next": "13.4.3",
     "react": "18.2.0",
     "react-countdown": "^2.3.2",
     "react-dom": "18.2.0",
     "sass": "^1.62.1",
     "viem": "^0.3.50",
-    "wagmi": "^1.0.1"
+    "wagmi": "^1.0.9"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@types/lodash": "^4.14.195",
     "@types/node": "20.2.1",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
