@@ -17,6 +17,7 @@ import {
 import {configureChains, createConfig, WagmiConfig} from 'wagmi'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { infuraProvider } from "wagmi/providers/infura";
+import { publicProvider } from "wagmi/providers/public";
 import {VmpxProvider} from "@/contexts/VMPX";
 import { supportedChains } from "@/config/chains";
 
@@ -43,11 +44,12 @@ const getRPCs = (chain: any) => ({
 const { publicClient, webSocketPublicClient } = configureChains(
   chains,
   [
+    publicProvider(),
     infuraProvider({
       apiKey: publicRuntimeConfig.infuraId
     }),
     jsonRpcProvider({
-      rpc: getRPCs as any
+       rpc: getRPCs as any
     })
   ]
 )
