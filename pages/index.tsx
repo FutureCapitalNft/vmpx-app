@@ -11,7 +11,6 @@ import {
   Typography,
 } from "@mui/material";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 import Link from "next/link";
 import Countdown from 'react-countdown';
 import {disclaimer} from "@/components/disclaimer";
@@ -29,12 +28,12 @@ import {
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
-  // usePublicClient,
   useWaitForTransaction
 } from "wagmi";
 import {NotificationsContext} from "@/contexts/Notifications";
 import {ConsentContext} from "@/contexts/Consent";
-// import {debounce} from 'lodash';
+import {gaMintFailure, gaMintSuccess, gaWalletConnected, gaWalletDisconnected} from "@/shared/ga";
+import {CurrentNetworkContext} from "@/contexts/CurrentNetwork";
 
 const {publicRuntimeConfig: config} = getConfig();
 const supportedNetworks = networks({config});
@@ -107,19 +106,23 @@ const StyledLoadingButton = styled(LoadingButton)(({ theme }: any) => ({
 
 const ethersInWei = BigInt('1000000000000000000');
 
+const onConnect = ({ address }: any) => gaWalletConnected(address);
+const onDisconnect = () => gaWalletDisconnected();
+
 const NetworkPage = ({}: any) => {
   const {message} = useContext(NotificationsContext);
-  const networkId = 'mainnet'
-  // const {networkId} = useContext(CurrentNetworkContext);
+  // const networkId = 'mainnet'
+  const {networkId} = useContext(CurrentNetworkContext);
   const { requestTermsAcceptance, termsAccepted } = useContext(ConsentContext);
   const {chain} = useNetwork();
-  const {address} = useAccount();
+  const {address} = useAccount({ onConnect, onDisconnect });
   const { data: blockNumber } = useBlockNumber({ chainId: chain?.id, watch: true })
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
   // const publicClient = usePublicClient({ chainId: chain?.id });
   const [power, setPower] = useState(1);
   const [committedPower, setCommittedPower] = useState(1);
   const [gas, setGas] = useState<bigint>(0n);
+  const [started, setStarted] = useState(false);
 
   const hasVmpx = !!(networkId && supportedNetworks[networkId]?.contractAddress);
 
@@ -134,6 +137,7 @@ const NetworkPage = ({}: any) => {
     && Number(supportedNetworks[networkId]?.maxSafeVMUs) || 256;
 
   const mintingHasStarted = (globalState?.startBlockNumber || 0n) < (blockNumber || globalState?.startBlockNumber || 0n);
+  // const mintingHasStarted = true;
   const blocksToStart = (globalState?.startBlockNumber || 0n) - (blockNumber || globalState?.startBlockNumber || 0n);
   const mintingIsOver = globalState?.totalSupply === globalState?.cap;
 
@@ -207,10 +211,13 @@ const NetworkPage = ({}: any) => {
   });
 
   useEffect(() => {
-    if (globalState?.startBlockNumber > 0n && blocksToStart === 0n) {
-      refetch().then(console.log)
+    if (!started && globalState?.startBlockNumber === 0n) {
+      setStarted(true);
     }
-  }, [blocksToStart, globalState?.startBlockNumber])
+    if (!started && globalState?.startBlockNumber > 0n && ((blockNumber || 0n) > globalState?.startBlockNumber)) {
+      refetch().then(_ => setStarted(true))
+    }
+  }, [blockNumber, globalState?.startBlockNumber, started])
 
   const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
 
@@ -218,9 +225,13 @@ const NetworkPage = ({}: any) => {
     ...mintTx,
     confirmations: 1,
     onSuccess: () => {
+      gaMintSuccess(address as string, committedPower)
       message.info('VMPX Minted')
       refetchUserBalance()
         .then(() => refetchVmpx())
+    },
+    onError: (err) => {
+      gaMintFailure(address as string, committedPower)
     }
   })
 
