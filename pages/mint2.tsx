@@ -25,10 +25,8 @@ import {VmpxContext} from "@/contexts/VMPX";
 import {TVmpx} from "@/contexts/VMPX/types";
 import {
   useAccount, useBlockNumber,
-  useContractWrite,
   useNetwork,
-  usePrepareContractWrite,
-  useWaitForTransaction
+  useWaitForTransaction, useWalletClient
 } from "wagmi";
 import {NotificationsContext} from "@/contexts/Notifications";
 import {ConsentContext} from "@/contexts/Consent";
@@ -109,23 +107,26 @@ const ethersInWei = BigInt('1000000000000000000');
 const onConnect = ({ address }: any) => gaWalletConnected(address);
 const onDisconnect = () => gaWalletDisconnected();
 
-const MintPage = () => {
+const MintPage2 = () => {
   const {message} = useContext(NotificationsContext);
   const networkId = 'mainnet'
   // const {networkId} = useContext(CurrentNetworkContext);
   const { requestTermsAcceptance, termsAccepted } = useContext(ConsentContext);
   const {chain} = useNetwork();
   const {address} = useAccount({ onConnect, onDisconnect });
+  const { data: walletClient } = useWalletClient({
+    chainId: chain?.id
+  });
   const { data: blockNumber } = useBlockNumber({
     chainId: chain?.id,
     watch: true
   })
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
-  // const publicClient = usePublicClient({ chainId: chain?.id });
   const [power, setPower] = useState(1);
   const [committedPower, setCommittedPower] = useState(1);
   const [gas, setGas] = useState<bigint>(0n);
   const [started, setStarted] = useState(false);
+  const [hash, setHash] = useState<`0x${string}`>();
 
   const hasVmpx = !!(networkId && supportedNetworks[networkId]?.contractAddress);
 
@@ -147,16 +148,6 @@ const MintPage = () => {
   const blockTime = supportedNetworks[networkId || '']?.blockTimeMs || 12_000;
 
   useEffect(() => {
-    /*
-    TODO: roll back to gas estimates once RPC issues are resolved
-    publicClient.estimateContractGas({
-      address: supportedNetworks[networkId!]?.contractAddress as any,
-      abi: contractABI,
-      functionName: 'mint',
-      args: [power],
-      account: address as any
-    }).then(setGas)
-     */
     setGas(BigInt(700 * 200 * committedPower + 90_000));
   }, [committedPower, batch, networkId, address]);
 
@@ -202,31 +193,18 @@ const MintPage = () => {
     setCommittedPower(Number(maxPossibleVMUs))
   }
 
-  const { config: mintConfig, refetch } = usePrepareContractWrite({
-    address: supportedNetworks[networkId!]?.contractAddress as `0x${string}`,
-    abi: contractABI,
-    chainId: chain?.id,
-    functionName: 'mint',
-    args: [committedPower],
-    gas: (gas * 108n) / 100n,
-    enabled: mintingHasStarted && !mintingIsOver && committedPower > 0n
-    // cacheTime: 1_000
-  });
-
   useEffect(() => {
     console.log(blockNumber)
     if (!started && globalState?.startBlockNumber === 0n) {
       setStarted(true);
     }
     if (!started && globalState?.startBlockNumber > 0n && ((blockNumber || 0n) > globalState?.startBlockNumber)) {
-      refetch().then(_ => setStarted(true))
+      setStarted(true)
     }
   }, [blockNumber, globalState?.startBlockNumber, started])
 
-  const { isLoading: isMintLoading, writeAsync: mint, data: mintTx } = useContractWrite(mintConfig);
-
   const { isLoading: isMintWaiting } = useWaitForTransaction({
-    ...mintTx,
+    hash,
     confirmations: 1,
     onSuccess: () => {
       gaMintSuccess(address as string, committedPower)
@@ -239,7 +217,7 @@ const MintPage = () => {
     }
   })
 
-  const loading = isMintLoading || isMintWaiting;
+  const loading = isMintWaiting;
 
   const requireTermsAccepted = async () => {
     if (!termsAccepted) {
@@ -251,7 +229,16 @@ const MintPage = () => {
   const doMint = async () => {
     try {
       if (config.requireTermsSigning) await requireTermsAccepted();
-      mint && await mint();
+      if (walletClient) {
+        const hash = await walletClient.writeContract({
+          address: supportedNetworks[networkId!]?.contractAddress as `0x${string}`,
+          abi: contractABI,
+          functionName: 'mint',
+          args: [committedPower],
+          gas: (gas * 108n) / 100n,
+        });
+        setHash(hash);
+      }
     } catch (e: any) {
       if (e.shortMessage) {
         message.warning(e.shortMessage);
@@ -308,17 +295,23 @@ const MintPage = () => {
               </Button>
             </Link>
         </Container>}
-        {address && vmpxIsActive && <Container sx={{textAlign: 'center', padding: 3 }}>
+        {address && vmpxIsActive && <Container sx={{textAlign: 'center', padding: 1 }}>
           <Image
               width={245}
               height={71}
               src="/VMPX.svg"
               alt="VMPX logo" />
             <StyledSubH
-            variant="subtitle2" sx={{ mb: 4 }}>
+            variant="subtitle2" sx={{ mb: 1 }}>
             ERC-20
           </StyledSubH>
           <Grid container sx={{ maxWidth: 450, justifyContent: 'center', margin: 'auto' }}>
+              <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                  <StyledSubH
+                      variant="body1" >
+                      Alternative Minting Page
+                  </StyledSubH>
+              </Grid>
             <Grid item xs={6} sx={{ textAlign: 'left' }}>
                 <StyledP
                     className={gentumFontClass}
@@ -393,12 +386,12 @@ const MintPage = () => {
                     </IconButton>
                 </Stack>
             </Grid>}
-            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
+            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 1, mt: 2 }}>
               <StyledLoadingButton
                 size="large"
                 color="error"
                 variant={loading ? "outlined" : "contained"}
-                disabled={!mint || chain?.unsupported}
+                disabled={chain?.unsupported}
                 disableElevation
                 loading={loading}
                 loadingPosition="end"
@@ -408,6 +401,11 @@ const MintPage = () => {
                 {!chain?.unsupported && !loading && `Mint ${(power * batch).toLocaleString()} VMPX`}
                 {!chain?.unsupported && loading && 'Minting'}
               </StyledLoadingButton>
+            </Grid>}
+            {address && !mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2 }}>
+                <Typography variant="body2">
+                  Gas: {((gas * 108n) / 100n).toLocaleString()}
+                </Typography>
             </Grid>}
             {address && mintingIsOver && mintingHasStarted && <Grid item xs={12} sx={{ py: 2, mt: 2 }}>
                 <StyledSubH variant="h4" >Minting Is Over</StyledSubH>
@@ -438,4 +436,4 @@ export const getStaticProps = async () => {
    return {props: {}}
 };
 
-export default MintPage
+export default MintPage2
