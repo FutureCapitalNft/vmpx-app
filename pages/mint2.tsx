@@ -119,7 +119,7 @@ const MintPage2 = () => {
   });
   const { data: blockNumber } = useBlockNumber({
     chainId: chain?.id,
-    watch: true
+    watch: false
   })
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
   const [power, setPower] = useState(1);
