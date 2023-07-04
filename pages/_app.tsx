@@ -18,7 +18,7 @@ import {configureChains, createConfig, WagmiConfig} from 'wagmi'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import {VmpxProvider} from "@/contexts/VMPX";
+import { VmpxProvider } from "@/contexts/VMPX";
 import { supportedChains } from "@/config/chains";
 
 const { publicRuntimeConfig } = getConfig();
