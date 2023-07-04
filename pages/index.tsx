@@ -145,7 +145,6 @@ const MintPage = () => {
   const mintingIsOver = globalState?.totalSupply === globalState?.cap;
 
   const blockTime = supportedNetworks[networkId || '']?.blockTimeMs || 12_000;
-
   useEffect(() => {
     /*
     TODO: roll back to gas estimates once RPC issues are resolved
@@ -415,7 +414,7 @@ const MintPage = () => {
             {address && !mintingHasStarted && <Container sx={{textAlign: 'center', padding: 3 }}>
                 <StyledCountdown>Minting starts in </StyledCountdown>
                 <Countdown
-                    key={blockNumber?.toString()}
+                    // key={blockNumber?.toString()}
                     className="countdown-text"
                     daysInHours
                     zeroPadTime={2}

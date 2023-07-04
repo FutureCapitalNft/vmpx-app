@@ -413,7 +413,7 @@ const MintPage2 = () => {
             {address && !mintingHasStarted && <Container sx={{textAlign: 'center', padding: 3 }}>
                 <StyledCountdown>Minting starts in </StyledCountdown>
                 <Countdown
-                    key={blockNumber?.toString()}
+                    // key={blockNumber?.toString()}
                     className="countdown-text"
                     daysInHours
                     zeroPadTime={2}
