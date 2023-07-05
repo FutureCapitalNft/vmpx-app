@@ -118,7 +118,7 @@ const MintPage = () => {
   const {address} = useAccount({ onConnect, onDisconnect });
   const { data: blockNumber } = useBlockNumber({
     chainId: chain?.id,
-    watch: true
+    watch: false
   })
   const { global, refetchUserBalance, refetchVmpx } = useContext(VmpxContext);
   // const publicClient = usePublicClient({ chainId: chain?.id });
