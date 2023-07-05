@@ -44,14 +44,12 @@ const ApplicationBar = () => {
 
   const balance = user[chain?.id!]?.[address!]?.balance || 0n;
 
-  const isHomePage = router.asPath === '/';
   const contractAddress = networkId && supportedNetworks[networkId]?.contractAddress;
   const isDev = config.nodeEnv === 'development';
   const image = `${isDev ? 'http://' : 'https://'}${config.deployedUrl}/vmpx-round-black.png`;
 
   useEffect(() => {
     const unwatch = watchNetwork((network) => {
-      // console.log('???', router.query, network.chain);
       if (network?.chain?.unsupported) {
         message.warning('Unsupported network')
         return;
@@ -65,7 +63,6 @@ const ApplicationBar = () => {
       const subPath = path
         .replace(networkId, '')
         .replaceAll(/\//g, '');
-      // console.log(path, subPath)
       if (networkId) {
         const url = `/${walletNetworkId}/${subPath}`;
         return router.replace(url)
@@ -89,7 +86,7 @@ const ApplicationBar = () => {
             <Avatar src={'/favicon.ico'} />
           </Link>
           <Stack direction="row" sx={{ alignItems: 'center' }} spacing={1}>
-            {!isHomePage && !chain?.unsupported && <AddTokenButton
+            {!chain?.unsupported && <AddTokenButton
               type="VMPX"
               address={contractAddress}
               image={image} />}
